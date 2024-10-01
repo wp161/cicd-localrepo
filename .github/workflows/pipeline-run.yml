@@ -1,0 +1,50 @@
+name: Python Pipeline Run
+
+on:
+  workflow_run:
+    workflows: ["PR Size Check"]
+    types:
+      - completed # Trigger when the pr-size-check workflow completes successfully
+
+  pull_request:
+    types:
+      - closed # Trigger when a PR is merged (closed with merged status)
+
+jobs:
+  build:
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install poetry
+          poetry install
+
+      - name: Run Tests and Coverage
+        run: poetry run pytest --cov=src/ --cov-report=term-missing --cov-fail-under=80
+
+      - name: Run Lint (Flake8)
+        run: poetry run flake8 src/
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: reports/tests/
+
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: htmlcov/

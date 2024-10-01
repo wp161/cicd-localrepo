@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 88  # Same as Black's default       
+ignore = E203, E266, E501, E305      
+exclude = .venv/,build/,dist/  

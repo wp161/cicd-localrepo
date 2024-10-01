@@ -1,0 +1,21 @@
+name: Assign Reviewer
+
+on:
+  workflow_run:
+    workflows: ["PR Size Check"] # This workflow runs after the PR Size Check
+    types:
+      - completed # Trigger when the pr-size-check workflow is completed
+
+jobs:
+  reviewer-lottery:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.pull_request.action == 'opened' # Ensures that the workflow only runs once when the PR is first created
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: 🎲 The Blame Game (Reviewer Edition) 🎲
+        uses: uesteibar/reviewer-lottery@v3.1.0
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
