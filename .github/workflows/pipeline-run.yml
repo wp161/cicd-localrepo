@@ -1,18 +1,15 @@
 name: Python Pipeline Run
 
 on:
-  workflow_run:
-    workflows: ["PR Size Check"]
-    types:
-      - completed # Trigger when the pr-size-check workflow completes successfully
-
   pull_request:
     types:
-      - closed # Trigger when a PR is merged (closed with merged status)
+      - opened    # Trigger on any new pull request
+      - synchronize    # Trigger when new commits are pushed to the PR
+      - closed  # Trigger when a PR is merged (closed with merged status)
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true || github.event_name == 'workflow_run'
+    if: github.event.pull_request.merged == true || github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
 
     steps:

@@ -1,10 +1,9 @@
 name: Assign Reviewer
 
 on:
-  workflow_run:
-    workflows: ["PR Size Check"] # This workflow runs after the PR Size Check
+  pull_request:
     types:
-      - completed # Trigger when the pr-size-check workflow is completed
+      - opened    # Trigger on any new pull request
 
 jobs:
   reviewer-lottery:
