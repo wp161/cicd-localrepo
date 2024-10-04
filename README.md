@@ -65,6 +65,23 @@ Build the Project: Build source distribution and wheel files:
 poetry build
 ```
 
+Run CLI command with Poetry:
+
+```bash
+poetry run <command>
+# e.g. 
+# $ poetry run cicd config show
+
+# Displaying current configuration
+# is-repo-remote: False
+# is-config-remote: False
+# is-run-remote: False
+# repo: None
+# config: None
+# server: None
+# format: plain
+```
+
 Running Tests
 To run all unit tests:
 

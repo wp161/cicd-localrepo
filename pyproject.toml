@@ -43,6 +43,9 @@ black = "^24.8.0"               # Black automatic code formatting
 [tool.poetry.group.dev.dependencies]
 nox = "^2024.4.15"
 
+[tool.poetry.scripts]
+cicd = "t3_cicd_cli.cli:cli"
+
 [tool.pytest.ini_options]
 testpaths = [
   "tests"
