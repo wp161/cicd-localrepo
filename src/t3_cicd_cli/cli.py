@@ -3,7 +3,8 @@ CLI program using Click to greet a user by name.
 """
 
 import click
-from t3_cicd_cli.configuration import config as config_group
+from t3_cicd_cli.configuration_commands import config as config_group
+from t3_cicd_cli.job_commands import rerun, stop
 
 
 @click.group()
@@ -13,6 +14,8 @@ def cli():
 
 
 cli.add_command(config_group)
+cli.add_command(rerun)
+cli.add_command(stop)
 
 
 @cli.command()

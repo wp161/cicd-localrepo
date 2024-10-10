@@ -1,11 +1,10 @@
 """
 Class for Configuration Commands
 """
-
 import click
 
 
-class Configuration:
+class ConfigurationCommands:
 
     def __init__(self):
         self.is_repo_remote = False
@@ -68,7 +67,7 @@ class Configuration:
         configuration.display()
 
 
-configuration = Configuration()
+configuration = ConfigurationCommands()
 
 
 @click.group()

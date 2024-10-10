@@ -1,8 +1,8 @@
 from click.testing import CliRunner
-from t3_cicd_cli.configuration import config
+from t3_cicd_cli.configuration_commands import config
 
 
-class TestConfiguration:
+class TestConfigurationCommands:
 
     def test_show_default(self):
         runner = CliRunner()
