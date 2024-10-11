@@ -3,8 +3,11 @@ CLI program using Click to greet a user by name.
 """
 
 import click
+from t3_cicd_cli.pipeline_commands import run
 from t3_cicd_cli.configuration_commands import config as config_group
 from t3_cicd_cli.job_commands import rerun, stop
+from t3_cicd_cli.log_commands import log
+from t3_cicd_cli.info_commands import info
 
 
 @click.group()
@@ -13,40 +16,12 @@ def cli():
     pass
 
 
+cli.add_command(run)
 cli.add_command(config_group)
 cli.add_command(rerun)
 cli.add_command(stop)
-
-
-@cli.command()
-@click.option(
-    "--dry-run",
-    is_flag=True,
-    help="Run the pipeline without executing any jobs (simulation).",
-)
-@click.option(
-    "--override",
-    multiple=True,
-    type=str,
-    help="Override configuration values. Format: key=value.",
-)
-def run(dry_run, override):
-    """
-    Run the pipeline. Optionally perform a dry run or override
-    configuration values.
-    """
-    if dry_run:
-        click.echo("Performing a dry run of the pipeline...")
-
-    if override:
-        overrides = dict(item.split("=") for item in override)
-        click.echo(f"Overriding the following config values: {overrides}")
-
-    # Simulate running the pipeline
-    if not dry_run:
-        click.echo("Executing the pipeline...")
-    else:
-        click.echo("Dry run complete. No jobs were executed.")
+cli.add_command(log)
+cli.add_command(info)
 
 
 if __name__ == "__main__":

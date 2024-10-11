@@ -4,7 +4,7 @@ from click.testing import CliRunner
 from t3_cicd_cli.cli import cli
 
 
-class TestCLI:
+class TestPipelineCommands:
 
     def test_run_dry_run(self):
         """Test the 'run' command with the --dry-run option."""
@@ -38,12 +38,3 @@ class TestCLI:
         result = runner.invoke(cli, ["run"])
         assert result.exit_code == 0
         assert "Executing the pipeline..." in result.output
-
-    def test_config_show(self):
-        """Test the 'config show' command."""
-        runner = CliRunner()
-        result = runner.invoke(cli, ["config", "show"])
-        assert result.exit_code == 0
-        assert (
-            "Displaying current configuration" in result.output
-        )  # Adjust based on your display method
