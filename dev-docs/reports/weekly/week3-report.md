@@ -18,7 +18,7 @@
 
 | Task                                                                                                                                                   | Weight | Assignee          |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------|--------|-------------------|
-| [[Parent Ticket] Create a skeleton for the Commands and Subcommands from Finalized CLI Design](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/11) | 3      | Kelvin | | 3      | Yuhan, Yuanyuan |
+| [[Parent Ticket] Create a skeleton for the Commands and Subcommands from Finalized CLI Design](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/11) | 3      | Kelvin |
 | [Create and test the Validation class for configuration validation commands](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/20)                  | 2      | Kelvin |
 
 
@@ -41,7 +41,6 @@
 
 # What did not work this week?
 - PR review takes time
-- Discussions require more time and effort due to the diverse knowledge backgrounds of team members.
 
 # Design updates
 - [Team 3 CI/CD Backend System Design](https://docs.google.com/document/d/1WmzA9xXXay2349NbBVnbmHHtN1dFnkX-mJs9rkf4Dnw/edit?usp=sharing)
