@@ -36,7 +36,7 @@
   1. Sprint Planning: Tuesday evening after class
   2. Standup: Wednesday & Thursday 4pm, and Friday 2pm
   3. Sprint Retro: Monday 5:30pm
-- Conducted multiple discussions on the advanced CI/CD backend system design, and the documentation is now almost complete and has entered the review phase.
+- Conducted multiple discussions on the advanced CI/CD backend system design. The documentation now includes the first version of a low-level, implementable design; for details, please see the "Design Updates". However, it does not yet include database schema design, Kubernetes design, future performance considerations, etc. The document has now entered the review phase.
 - Completed the development and testing of Pipeline Commands, Log Commands, and Info Commands classes.
 - Implemented ConfigService and ConfigValidationController.
 - Defining and creating issues has become a lot easier.
@@ -65,7 +65,6 @@
 
 # Previous Design updates
 - [Original Design doc](https://github.com/CS6510-SEA-F24/individual-proposal-for-tech-stack-and-initial-design-wp161)
-- [Team 3 CI/CD Backend System Design](https://docs.google.com/document/d/1WmzA9xXXay2349NbBVnbmHHtN1dFnkX-mJs9rkf4Dnw/edit?usp=sharing)
 - Summaries:
   - CLI: 
     - [GitHub repo](https://github.com/CS6510-SEA-F24/t3-cicd-cli/tree/main)
@@ -75,6 +74,7 @@
   - Config File: YAML (similar to GitLab CI/CD)
       - [GitLab CI/CD example setup](https://docs.gitlab.com/ee/ci/examples/)
   - Backend: Java Spring Boot
+      - [Team 3 CI/CD Backend System Design](https://docs.google.com/document/d/1WmzA9xXXay2349NbBVnbmHHtN1dFnkX-mJs9rkf4Dnw/edit?usp=sharing)
       - [GitHub repo](https://github.com/CS6510-SEA-F24/t3-cicd-backend)
       - [GitHub Client integration design update](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/1)
   - Job Execution: Docker container + Kubernetes cluster
