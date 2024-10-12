@@ -59,33 +59,8 @@
   4. Service Interactions
   5. Database Schema Design
   6. Scalability and Future Enhancements
-
-# Design Document Plans vs Actual Implementation
-- To help notify and explain the differences between the actual implementation and what was planned in the design document, please refer to the following example:
-- [Implement ConfigService and ConfigValidationControlle](https://github.com/CS6510-SEA-F24/t3-cicd-backend/pull/20)
-  1. parseConfigFile(configPath) vs parseAndValidateConfigFile(MultipartFile file):
-  - Design Document: The parseConfigFile function is designed to parse configuration files in YAML or JSON formats to extract pipeline settings.
-  - Actual Implementation: The parseAndValidateConfigFile method supports only uploaded YAML files and handles both parsing and validation of the pipeline configuration.
-  2. validateConfigFile(config) vs Methods like validateJobScript(String jobName, Map<String, Object> jobConfig):
-  - Design Document: The validateConfigFile method is intended to validate the structure and content of the configuration file.
-  - Actual Implementation: There are multiple validation methods, such as validateJobScript, validateScript, and validateJobConfig, which handle different aspects of validation.
-  3. overrideConfig(currentConfig, overrideParams):
-  - Design Document: This function is meant to merge CLI-provided override parameters with the current configuration.
-  - Actual Implementation: We did not use this method.
-  4. writeConfigToFile(mergedConfig, localConfigPath):
-  - Design Document: This function is designed to write the overridden configuration to a file.
-- Actual Implementation: We modified this method.
--In the actual implementation, the ConfigService.java has added the following methods:
-  1. processJobDependencies(): This method handles job dependencies, orders jobs within each stage, and checks for circular dependencies.
-  2. loadYaml(MultipartFile file): This method loads and parses the YAML content from the uploaded file.
-  3. handleConfigFile(Map<String, Object> config): This method processes the parsed YAML configuration file, separates job entries from non-job entries, validates the jobs, and processes the stages.
-  4. handleJobEntry(String jobName, Map<String, Object> jobConfig, Set  jobNames)  : This method validates the job name, job configuration, and job script, then creates and stores the job.
-  5. parseStages(Object value): This method parses the stages defined in the configuration, ensuring that stage names are unique.
-  6. validateJobScript(String jobName, Map<String, Object> jobConfig): This method validates that the job configuration contains a "script" field.
-  7. validateScript(String jobName, Object scriptObj): This method validates that the script field in the job configuration is not empty.
-  8. validateJobConfig(String jobName, Object jobConfig): This method validates that the job configuration is a valid Map.
-  9. handleJobStage(Object value): This method handles the stage configuration for the job, ensuring the stage is declared.
-  10. handleJobScripts(Object scriptObj, List  jobScripts)  : This method handles the job script configuration, adding the script(s) to the job script list.
+- Added a bullet point mentioning the differences between the actual implementation and what was planned in the design document. For example, the implementation of ConfigService has some differences from the design. For more details, please refer to the PR link: 
+[Implement ConfigService and ConfigValidationControlle](https://github.com/CS6510-SEA-F24/t3-cicd-backend/pull/20).
   
 
 # Previous Design updates
