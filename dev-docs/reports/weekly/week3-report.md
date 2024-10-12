@@ -59,6 +59,7 @@
 
 # Previous Design updates
 - [Original Design doc](https://github.com/CS6510-SEA-F24/individual-proposal-for-tech-stack-and-initial-design-wp161)
+- [Team 3 CI/CD Backend System Design](https://docs.google.com/document/d/1WmzA9xXXay2349NbBVnbmHHtN1dFnkX-mJs9rkf4Dnw/edit?usp=sharing)
 - Summaries:
   - CLI: 
     - [GitHub repo](https://github.com/CS6510-SEA-F24/t3-cicd-cli/tree/main)
