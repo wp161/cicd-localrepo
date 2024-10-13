@@ -5,8 +5,7 @@
 | Task                                                                                                                                | Weight | 
 |-------------------------------------------------------------------------------------------------------------------------------------|--------| 
 | [Implement ConfigService and ConfigValidationController](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/22)               | 5      |      |
-| [Create and test the EnvirontmentInfo class for info commands](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/21)           | 3      |      |
-| [Create and test the Log class for log commands](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/19)           | 3      |      |
+| [Created Pipeline Commands, Log Commands, Info Commands Classes and Tests](https://github.com/CS6510-SEA-F24/t3-cicd-cli/pull/28)| 3      |    |
 | [Add rerun and stop commands in CLI - skeleton version](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/18)       | 3      |      |
 | [Draft MVP Design doc for Backend](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/8)                                      | 3      |    |
 | [Discuss about blocker of backend design](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/10)                              | 3      |    |
