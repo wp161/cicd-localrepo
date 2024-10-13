@@ -49,11 +49,10 @@
 # Design updates
 - [Team 3 CI/CD Backend System Design](https://docs.google.com/document/d/1WmzA9xXXay2349NbBVnbmHHtN1dFnkX-mJs9rkf4Dnw/edit?usp=sharing)
 ### Summaries:
-- We are designing a CI/CD system tailored for small and medium-sized companies, with the primary goal of simplifying the continuous integration and delivery process. This backend system will support operations triggered via command-line interface (CLI), including starting pipelines, stopping tasks, fetching logs, and real-time log streaming. The system will be built using Spring Boot, integrating Docker for task execution, using Redis for real-time log streaming, and PostgreSQL for persistent storage of job and pipeline data. The current design does not include Kubernetes integration but supports running jobs locally and remotely using Docker.
- 
-### Design Document Plans vs Actual Implementation
-- Added a bullet point mentioning the differences between the actual implementation and what was planned in the design document. For example, the implementation of ConfigService has some differences from the design. For more details, please refer to the PR link: 
-[Implement ConfigService and ConfigValidationControlle](https://github.com/CS6510-SEA-F24/t3-cicd-backend/pull/20).
+- We used a client-driven approach when designing APIs. Each CLI subcommand will have its own API and unique URI. In this way there's a **one-to-one relationship between APIs and CLI subcommands**, which reduces the logic on the CLI and keeps it lightweight.
+  - We designed our backend services in a way such that the **same business logic can be called by different APIs**. For example, ConfigService provides logic to validate a Config File, which can be used in both the API for pipeline run subcommand and the API for validate subcommand. The purpose is to create a loosely-coupled backend, and increase modularity and encapsulation. In this way, business logic is decoupled from the API layer, and the API doesn't need to worry about the implementation of the logic as long as it knows what service to call. This will help reducing repetitive logic in the backend, as the same logic can be invoked at different places. It also makes the backend easier to maintain and easier to extend.
+  - The details in this design, e.g. the exact URI path/ request entity/ response entity/ scope and methods of each service are hand-wavy and **will be subjected to change/ update** as we haven't come up with the DB schema and don't have enough experience working with some of the dependencies e.g. Docker/ Redis. However, we believe it's more important to start implementing now and pick up on these things along the way than waiting for a confirmed 100% preparation to start. Upon implementation, we will take a deeper look at these details and make the judgement call.
+  - This week we implemented the ConfigService, and the actual implementation is off from what was planned in the design document. For more details and the reasoning, please refer to the PR link:[Implement ConfigService and ConfigValidationControlle](https://github.com/CS6510-SEA-F24/t3-cicd-backend/pull/20).
   
 
 # Previous Design updates
