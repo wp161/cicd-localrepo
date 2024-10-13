@@ -9,7 +9,7 @@
 | [Create and test the Log class for log commands](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/19)           | 3      |      |
 | [Add rerun and stop commands in CLI - skeleton version](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/18)       | 3      |      |
 | [Draft MVP Design doc for Backend](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/8)                                      | 3      |    |
-| [Discuss about blocker of backend design](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/10)                              | 1      |    |
+| [Discuss about blocker of backend design](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/10)                              | 3      |    |
 | [Finish finalize backend design doc](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/26)                                       | 3      |    |
 
 
@@ -45,6 +45,7 @@
 
 # What did not work this week?
 - Insufficient experience in designing backend system documentation.
+- PR review takes time
 
 # Design updates
 - [Team 3 CI/CD Backend System Design](https://docs.google.com/document/d/1WmzA9xXXay2349NbBVnbmHHtN1dFnkX-mJs9rkf4Dnw/edit?usp=sharing)
