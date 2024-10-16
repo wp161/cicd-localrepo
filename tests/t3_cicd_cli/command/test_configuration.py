@@ -1,5 +1,5 @@
 from click.testing import CliRunner
-from t3_cicd_cli.configuration_commands import config
+from t3_cicd_cli.command.configuration import config
 
 
 class TestConfigurationCommands:

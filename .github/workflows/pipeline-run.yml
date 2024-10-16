@@ -1,9 +1,10 @@
-name: Python Pipeline Run
+name: Pipeline Run
 
 on:
   pull_request:
     types:
-      - opened    # Trigger on any new pull request
+      - opened # Trigger on new pull request
+      - ready_for_review
       - synchronize    # Trigger when new commits are pushed to the PR
       - closed  # Trigger when a PR is merged (closed with merged status)
 
@@ -11,7 +12,6 @@ jobs:
   build:
     if: github.event.pull_request.merged == true || github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -27,7 +27,8 @@ jobs:
           poetry install
 
       - name: Run Tests and Coverage
-        run: poetry run pytest --cov=src/ --cov-report=term-missing --cov-fail-under=80
+        run:
+          poetry run pytest --cov=src/ --cov-report=term-missing --cov-fail-under=80
 
       - name: Run Lint (Flake8)
         run: poetry run flake8 src/

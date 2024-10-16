@@ -3,11 +3,12 @@ name: Assign Reviewer
 on:
   pull_request:
     types:
-      - opened    # Trigger on any new pull request
+      - opened # Trigger on new pull request
+      - ready_for_review
 
 jobs:
+  # Reviewer assignment job (Round-Robin)
   reviewer-lottery:
-    if: github.event.workflow_run.conclusion == 'success' && github.event.pull_request.action == 'opened' # Ensures that the workflow only runs once when the PR is first created
     runs-on: ubuntu-latest
     permissions: write-all
     steps:

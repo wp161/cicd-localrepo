@@ -3,11 +3,9 @@ CLI program using Click to greet a user by name.
 """
 
 import click
-from t3_cicd_cli.pipeline_commands import run
-from t3_cicd_cli.configuration_commands import config as config_group
-from t3_cicd_cli.job_commands import rerun, stop
-from t3_cicd_cli.log_commands import log
-from t3_cicd_cli.info_commands import info
+import importlib
+import pkgutil
+from t3_cicd_cli import command
 
 
 @click.group()
@@ -16,13 +14,13 @@ def cli():
     pass
 
 
-cli.add_command(run)
-cli.add_command(config_group)
-cli.add_command(rerun)
-cli.add_command(stop)
-cli.add_command(log)
-cli.add_command(info)
+# Dynamically import all modules from the command folder
+for module_info in pkgutil.iter_modules(command.__path__):
+    module = importlib.import_module(f't3_cicd_cli.command.{module_info.name}')
 
-
+    for attr_name in dir(module):
+        attr = getattr(module, attr_name)
+        if isinstance(attr, click.Command):
+            cli.add_command(attr)
 if __name__ == "__main__":
     cli()
