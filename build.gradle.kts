@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("jacoco")
     id("checkstyle")
+    id("com.github.spotbugs") version "6.0.23"
 }
 
 group = "northeastern.cs6510F2024"
@@ -20,6 +21,18 @@ tasks.test {
     useJUnitPlatform()
 
     finalizedBy(tasks.jacocoTestReport) // JaCoCo should run after tests
+}
+
+// SpotBugs Configuration
+spotbugs {
+    ignoreFailures.set(true)  // Do not fail the build on SpotBugs errors
+    effort.set(com.github.spotbugs.snom.Effort.MIN)
+}
+
+tasks.withType<com.github.spotbugs.snom.SpotBugsTask> {
+    reports {
+        create("html") { enabled = true }
+    }
 }
 
 // Jacoco Configuration

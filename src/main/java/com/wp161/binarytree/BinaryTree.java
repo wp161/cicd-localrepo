@@ -1,5 +1,7 @@
 package com.wp161.binarytree;
 
+import java.util.Objects;
+
 /**
  * The BinaryTree class represents a binary tree, where each node has a left and right child.
  * The tree supports operations like checking if it's a binary search tree (BST),
@@ -121,4 +123,21 @@ public class BinaryTree {
 
     return Math.max(node.getValue(), Math.max(leftMax, rightMax));
   }
+//
+//  @Override
+//  public boolean equals(Object o) {
+//    if (this == o) {
+//      return true;
+//    }
+//    if (o == null || getClass() != o.getClass()) {
+//      return false;
+//    }
+//    BinaryTree that = (BinaryTree) o;
+//    return Objects.equals(getRoot(), that.getRoot());
+//  }
+//
+//  @Override
+//  public int hashCode() {
+//    return Objects.hashCode(getRoot());
+//  }
 }
