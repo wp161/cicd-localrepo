@@ -34,17 +34,10 @@ class TestInfoCommands:
         runner = CliRunner()
         result = runner.invoke(
             cli,
-            [
-                "info",
-                "--stage",
-                "s1",
-                "--job",
-                "j1"
-            ],
+            ["info", "--stage", "s1", "--job", "j1"],
         )
         assert result.exit_code == 2
-        assert ('Specify either --job ' +
-                'or --stage, but not both.') in result.output
+        assert ("Specify either --job " + "or --stage, but not both.") in result.output
 
     def test_info_nothing(self):
         runner = CliRunner()
@@ -55,4 +48,4 @@ class TestInfoCommands:
             ],
         )
         assert result.exit_code == 2
-        assert ('Either --job or --stage is required.') in result.output
+        assert ("Either --job or --stage is required.") in result.output

@@ -18,11 +18,7 @@ class TestPipelineCommands:
         """Test the 'run' command with override options."""
         runner = CliRunner()
         result = runner.invoke(
-            cli, ["run",
-                  "--override",
-                  "key1=value1",
-                  "--override",
-                  "key2=value2"]
+            cli, ["run", "--override", "key1=value1", "--override", "key2=value2"]
         )
         assert result.exit_code == 0
         assert (

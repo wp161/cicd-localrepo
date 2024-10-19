@@ -19,8 +19,10 @@ class TestJobCommands:
             ],
         )
         assert result.exit_code == 0
-        assert ("Temporarily overriding the following config values: " +
-                "{'key1': 'value1', 'key2': 'value2'}") in result.output
+        assert (
+            "Temporarily overriding the following config values: "
+            + "{'key1': 'value1', 'key2': 'value2'}"
+        ) in result.output
         assert "Rerunning job 1" in result.output
 
     def test_rerun_no_override(self):
@@ -66,17 +68,10 @@ class TestJobCommands:
         runner = CliRunner()
         result = runner.invoke(
             cli,
-            [
-                "stop",
-                "--stage",
-                "1",
-                "--job",
-                "1"
-            ],
+            ["stop", "--stage", "1", "--job", "1"],
         )
         assert result.exit_code == 2
-        assert ('Specify either --job ' +
-                'or --stage, but not both.') in result.output
+        assert ("Specify either --job " + "or --stage, but not both.") in result.output
 
     def test_stop_nothing(self):
         runner = CliRunner()
@@ -87,4 +82,4 @@ class TestJobCommands:
             ],
         )
         assert result.exit_code == 2
-        assert ('Either --job or --stage is required.') in result.output
+        assert ("Either --job or --stage is required.") in result.output

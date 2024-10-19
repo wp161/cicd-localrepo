@@ -1,7 +1,9 @@
 """
 Class for Configuration Commands
 """
+
 import click
+from t3_cicd_cli.constant.default import DEFAULT_BRANCH_NAME
 
 
 class ConfigurationCommands:
@@ -11,6 +13,7 @@ class ConfigurationCommands:
         self.is_config_remote = False
         self.is_run_remote = False
         self.repo = None
+        self.branch = DEFAULT_BRANCH_NAME
         self.config = None
         self.server = None
         self.format = "plain"
@@ -22,6 +25,7 @@ class ConfigurationCommands:
         click.echo(f"is-config-remote: {self.is_config_remote}")
         click.echo(f"is-run-remote: {self.is_run_remote}")
         click.echo(f"repo: {self.repo}")
+        click.echo(f"branch: {self.branch}")
         click.echo(f"config: {self.config}")
         click.echo(f"server: {self.server}")
         click.echo(f"format: {self.format}")
@@ -32,6 +36,7 @@ class ConfigurationCommands:
         is_config_remote: bool,
         is_run_remote: bool,
         repo: str,
+        branch: str,
         config: str,
         server: str,
         format: str,
@@ -51,6 +56,11 @@ class ConfigurationCommands:
                 self.repo = None
             else:
                 self.repo = repo
+        if branch is not None:
+            if branch == "reset":
+                self.branch = None
+            else:
+                self.branch = branch
         if config is not None:
             if config == "reset":
                 self.config = None
@@ -62,6 +72,8 @@ class ConfigurationCommands:
             else:
                 self.server = server
         if format is not None:
+            # TODO: Create acceptable constant values for format, and make
+            # format a enum of contants
             self.format = format
         click.echo("Settings updated.")
         configuration.display()
@@ -104,8 +116,12 @@ def show():
 @click.option(
     "--repo",
     default=None,
-    help="URL or path to repo, " +
-    "set as null if using default",
+    help="URL or path to repo, " + "set as null if using default",
+)
+@click.option(
+    "--branch",
+    default=DEFAULT_BRANCH_NAME,
+    help="Branch of the repo, set as main if using default",
 )
 @click.option(
     "--config",
@@ -115,18 +131,18 @@ def show():
 @click.option(
     "--server",
     default=None,
-    help="Endpoint for the remote server if is-run-remote is True, " +
-    "else set to null as default",
+    help="Endpoint for the remote server if is-run-remote is True, "
+    + "else set to null as default",
 )
 @click.option(
-    "--format", default=None, help="Output format can be in plain, " +
-    "json, or yaml"
+    "--format", default=None, help="Output format can be in plain, " + "json, or yaml"
 )
 def set(
     is_repo_remote: bool,
     is_config_remote: bool,
     is_run_remote: bool,
     repo: str,
+    branch: str,
     config: str,
     server: str,
     format: str,
@@ -136,8 +152,14 @@ def set(
     display the updated configuration
     """
     configuration.update(
-        is_repo_remote, is_config_remote, is_run_remote, repo,
-        config, server, format
+        is_repo_remote,
+        is_config_remote,
+        is_run_remote,
+        repo,
+        branch,
+        config,
+        server,
+        format,
     )
 
 
@@ -148,5 +170,6 @@ def reset():
     will display the updated configuration
     """
     click.echo("Configuration has been reset to default.")
-    configuration.update(False, False, False, "reset", "reset", "reset",
-                         "plain")
+    configuration.update(
+        False, False, False, "reset", DEFAULT_BRANCH_NAME, "reset", "reset", "plain"
+    )

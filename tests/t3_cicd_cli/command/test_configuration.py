@@ -13,6 +13,7 @@ class TestConfigurationCommands:
         assert "is-config-remote: False" in result.output
         assert "is-run-remote: False" in result.output
         assert "repo: None" in result.output
+        assert "branch: main" in result.output
         assert "config: None" in result.output
         assert "server: None" in result.output
         assert "format: plain" in result.output
@@ -31,6 +32,8 @@ class TestConfigurationCommands:
                 "True",
                 "--repo",
                 "https://example.com/repo.git",
+                "--branch",
+                "example-branch",
                 "--config",
                 "https://example.com/config.yaml",
                 "--server",
@@ -45,6 +48,7 @@ class TestConfigurationCommands:
         assert "is-config-remote: True" in result.output
         assert "is-run-remote: True" in result.output
         assert "repo: https://example.com/repo.git" in result.output
+        assert "branch: example-branch" in result.output
         assert "config: https://example.com/config.yaml" in result.output
         assert "server: https://example.com/server" in result.output
         assert "format: json" in result.output
@@ -86,6 +90,8 @@ class TestConfigurationCommands:
                 "True",
                 "--repo",
                 "https://example.com/repo.git",
+                "--branch",
+                "example-branch",
                 "--config",
                 "https://example.com/config.yaml",
                 "--server",
@@ -104,6 +110,7 @@ class TestConfigurationCommands:
         assert "is-config-remote: False" in result.output
         assert "is-run-remote: False" in result.output
         assert "repo: None" in result.output
+        assert "branch: main" in result.output
         assert "config: None" in result.output
         assert "server: None" in result.output
         assert "format: plain" in result.output

@@ -1,6 +1,7 @@
 """
 Class for Run Commands for Stages and Jobs
 """
+
 import click
 
 
@@ -24,8 +25,9 @@ def rerun(job: str, override: str):
     """
     if override:
         overrides = dict(item.split("=") for item in override)
-        click.echo("Temporarily overriding the following config values: " +
-                   f"{overrides}")
+        click.echo(
+            "Temporarily overriding the following config values: " + f"{overrides}"
+        )
     click.echo(f"Rerunning job {job}")
 
 
@@ -48,10 +50,9 @@ def stop(context, stage: str, job: str):
     return an error message to the user.
     """
     if stage and job:
-        raise click.BadParameter('Specify either --job ' +
-                                 'or --stage, but not both.')
+        raise click.BadParameter("Specify either --job " + "or --stage, but not both.")
     if not stage and not job:
-        raise click.BadParameter('Either --job or --stage is required.')
+        raise click.BadParameter("Either --job or --stage is required.")
 
     if stage:
         click.echo(f"Stage {stage} has stopped.")

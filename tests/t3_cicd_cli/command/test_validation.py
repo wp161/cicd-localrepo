@@ -13,7 +13,7 @@ class TestValidationCommands(unittest.TestCase):
         runner = CliRunner()
         mock_response = MagicMock()
         mock_response.status_code = 200
-        mock_response.text = 'Success'
+        mock_response.text = "Success"
         mock_post.return_value = mock_response
 
         result = runner.invoke(
@@ -22,13 +22,12 @@ class TestValidationCommands(unittest.TestCase):
                 "validate",
                 "--config",
                 "tests/t3_cicd_cli/test_files/good_config.yaml",
-            ]
+            ],
         )
         file_path = "tests/t3_cicd_cli/test_files/good_config.yaml"
         mock_file.assert_called_once_with(file_path, "rb")
         mock_post.assert_called_once()
-        self.assertIn("The Config File is " +
-                      "successfully validated.", result.output)
+        self.assertIn("The Config File is " + "successfully validated.", result.output)
 
     @patch("builtins.open", new_callable=mock_open, read_data="config content")
     @patch("requests.post")
@@ -44,13 +43,12 @@ class TestValidationCommands(unittest.TestCase):
             cli,
             [
                 "validate",
-            ]
+            ],
         )
 
         mock_file.assert_called_once_with(DEFAULT_CONFIG_PATH, "rb")
         mock_post.assert_called_once()
-        self.assertIn("The Config File is " +
-                      "successfully validated.", result.output)
+        self.assertIn("The Config File is " + "successfully validated.", result.output)
 
     @patch("builtins.open", new_callable=mock_open, read_data="config content")
     @patch("requests.post")
@@ -64,11 +62,7 @@ class TestValidationCommands(unittest.TestCase):
 
         result = runner.invoke(
             cli,
-            [
-                "validate",
-                "--config",
-                "tests/t3_cicd_cli/test_files/bad_config.yaml"
-            ]
+            ["validate", "--config", "tests/t3_cicd_cli/test_files/bad_config.yaml"],
         )
 
         file_path = "tests/t3_cicd_cli/test_files/bad_config.yaml"
@@ -85,9 +79,10 @@ class TestValidationCommands(unittest.TestCase):
             [
                 "validate",
                 "--config",
-                "tests/t3_cicd_cli/test_files/unfound_config.yaml"
-            ]
+                "tests/t3_cicd_cli/test_files/unfound_config.yaml",
+            ],
         )
-        file_path = 'tests/t3_cicd_cli/test_files/unfound_config.yaml'
-        self.assertIn(f"Error: The file '{file_path}' was " +
-                      "not found.", result.output)
+        file_path = "tests/t3_cicd_cli/test_files/unfound_config.yaml"
+        self.assertIn(
+            f"Error: The file '{file_path}' was " + "not found.", result.output
+        )
