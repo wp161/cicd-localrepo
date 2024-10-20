@@ -3,18 +3,18 @@
 # Completed tasks
 
 | Task                                                                                                                          | Weight |
-| ----------------------------------------------------------------------------------------------------------------------------- | ------ | ----- |
-| [CLI: Implement configuration reading/ writing with local JSON file](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/36) | 3      | Wenbo |
-| [Update backend design doc based on current comment](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/23)             | 3      | Yuhan |
+| ----------------------------------------------------------------------------------------------------------------------------- | ------ |
+| [CLI: Implement configuration reading/ writing with local JSON file](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/36) | 3      |
+| [Update backend design doc based on current comment](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/23)             | 3      |
 
 # Carry over tasks
 
-| Task                                                                                                                                                                         | Weight | Assignee |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- |
-| [Create an API and controller to handle pipeline run request from the CLI](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/24)                                      | 3      | Yuanyuan |
-| [Backend Service: Create a service to make Docker containers for each job and pass the script to the container](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/25) | 3      | Kelvin   |
-| [Backend Database: Connect SpringBoot backend to PostgreSQL and save job run history to a table](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/26)                | 3      | Yuhan    |
-| [CLI: Implement the pipeline run command with git push](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/34)                                                             | 3      | Wenbo    |
+| Task                                                                                                                                                                                                     | Weight | Assignee |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- |
+| [Create an API and controller to handle pipeline run request from the CLI](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/24)(dev completed pending test)                                      | 3      | Yuanyuan |
+| [Backend Service: Create a service to make Docker containers for each job and pass the script to the container](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/25)(dev completed pending test) | 3      | Kelvin   |
+| [Backend Database: Connect SpringBoot backend to PostgreSQL and save job run history to a table](https://github.com/CS6510-SEA-F24/t3-cicd-backend/issues/26)(dev completed pending test)                | 3      | Yuhan    |
+| [CLI: Implement the pipeline run command with git push](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/34)(in review)                                                                              | 3      | Wenbo    |
 
 # New tasks
 
@@ -26,25 +26,51 @@
 
 - Updated the backend design document, incorporating feedback and requirements.
 - Successfully split the run pipeline feature into four parts, with each team member focusing on a specific part.
-- CLI: Initialized the local repository and coordinated the configuration. Added CLI configurations and reading/writing. Add Generated the required API and posted it to the backend.
-- Controller: Implemented the pipeline controller, which is now capable of handling requests from the CLI client. It’s ready to interact with Docker and Log services.
-- Job run and Docker Service: Configured the Docker container and successfully passed scripts into the container to run job, stop job.
-- Connection to PostgreSQL and Log Service: Implemented the LogService entity, repository, PostgreSQL connection configuration, and SOP document for local PostgreSQL initial setup.
+- Everyone is on a good track, and our daily standups provide regular sync-ups to ensure everyone is aware of each other's progress, with timely updates on progress and blockers when they arise. This way, when blockers occur, teammates can quickly step in to help unblock
 
 # What did not work this week?
 
-- CLI: Still working on finalizing tests for the git utility methods and the pipeline run command, will complete once it's done.
-- Controller: Testing for the controller is still in progress and needs intergrate with each service after service part finished.
-- Docker: Testing for the Docker service is still in progress.
-- Connection to PostgreSQL and Log Service: Working on adding tests and potentially updating the Log entity or adding additional entities.
+- We're currently working on the backend separately, but we've noticed dependencies that make it hard to coordinate, so we need to be more mindful of this when dividing tasks next time.
 
 # Design updates
 
+- **High-level Design Updates**:
+  - **Git Integration Shifted to CLI**:
+    - Initially, Git integration was part of the Java backend. In the new design, Git operations (like cloning and pushing code) are handled by the CLI, reducing the load on the backend.
+  - **Previous approach**:
+    - Per [GitHub Client integration design update](https://github.com/CS6510-SEA-F24/t3-cicd-cli/issues/1),
+      The Java backend was responsible for fetching the code repository using Git commands and passing it to Docker containers for job execution. Local repos were zipped and sent via HTTP to the backend.
+  - **Issues with the Previous Approach**:
+    - **High Data Transfer**: Multiple transfers between CLI, backend, and services created inefficiencies.
+    - **Memory Usage**: Large repos would cause memory issues on the backend, requiring complex file I/O handling.
+  - **Solution**:
+    - **Shift Git Cloning to Docker Containers**: Each Docker container now clones the required Git repository directly. The CLI retrieves the Git URL and branch name from the CLI configuration and passes it to the backend.
+      - **Using existing design**: In CLI design, we save the URL/ path of the repo as one of the CLI Configurations (see this in Week1&Week2 below), and we can leverage on this feature to get the Git URL and the branch name that we need.
+        > A key design is the **CLI config** where the user can specify environment variables.
+      - **Remote Repos**: The URL and branch name from the user's configuration are passed directly to the backend.
+      - **Local Repos**: A dedicated Git repo (**[cicd-localrepo](https://github.com/wp161/cicd-localrepo)**) is used to store local files, mimicking remote repo behavior. The CLI pushes local files to this repo before running CI/CD.
+      - **Branch Management**: Users can configure which branch to use for remote repos in the CLI Config, while unique branch names are created for local repos pushed to **[cicd-localrepo](https://github.com/wp161/cicd-localrepo)**.
+      - **Using Specific Commit**: By committing and uploading the local repo to **[cicd-localrepo](https://github.com/wp161/cicd-localrepo/tree/main)**, it's guaranteed that when the user specifies a valid commit with `cicd run --commit <commit_hash>`, this commit will exist in **[cicd-localrepo](https://github.com/wp161/cicd-localrepo/tree/main)**.
+  - **Edge Case - Mixed Repos**:
+    - If a repo is both local and remote (e.g., cloned from a remote Git), the user must specify in the CLI configuration whether to treat it as remote or local. For local repos, the user must commit any changes before running CI/CD.
+  - **Alternatives Considered**:
+    - Directly pushing changes to the user’s remote repo was ruled out to maintain privacy.
+    - Creating "dummy commits" on behalf of the user was also rejected due to risks of corrupting Git history.
+  - **Possible optimization**:
+    - **Reducing Branch Count**: Instead of creating new branches for each local run, the same branch could be reused with incremental changes. This would reduce the number of branches and avoid redundant code storage. However, it requires saving unique branch names in the user’s local file system, which risks unintentional modification or deletion by the user.
+    - **Improving Infrastructure**: **[cicd-localrepo](https://github.com/wp161/cicd-localrepo/tree/main)** is a lazy solution because we don't want to pay for storage and just want a quick way to upload/download local code repo. In a more robust infrastructure, the process for handling local repos could involve object storage (like S3), async job queues, and dedicated CI/CD workers to manage builds more efficiently.
 - [Team 3 CI/CD Backend System Design](https://docs.google.com/document/d/1WmzA9xXXay2349NbBVnbmHHtN1dFnkX-mJs9rkf4Dnw/edit?usp=sharing)
-- Summaries:
   - We updated the Pipeline/run API by reducing the payload size, removing redundant fields. Previously, optional fields like commit were included in the payload as empty strings (e.g., commit: ""). In the updated API, if a field is optional and not provided, the key itself is omitted from the payload. This reduces the payload size without affecting functionality, as the backend can handle missing keys for optional parameters
+  - Delete mock code for controller part for reason:
+    - There is duplication between the logic and the mock code. The document is already 50 pages long, which isn't a good sign. It's becoming difficult to modify each part consistently, and any lack of clarity could lead to confusion during implementation.
+    - The controller's mock code needs to be fully written to avoid misunderstandings. If it's incomplete, it could cause confusion and increase the workload beyond just design.
+    - When implementing, the controller can often be designed with a better logic than what’s initially written in the mock code, making the mock version less helpful.
+  - Update API by adding CLI configuration information as argument.
+  - CLI configurations design: The current CLI configurations are stored in a plain object, causing updates to be lost across multiple calls. To ensure persistent configuration values, implement reading and writing to a local JSON file
 
 # Previous Design updates
+
+## Week1&Week2
 
 - [Original Design doc](https://github.com/CS6510-SEA-F24/individual-proposal-for-tech-stack-and-initial-design-wp161)
 - Summaries:
@@ -67,3 +93,12 @@
   - Data store: PostgreSQL (objects, files, metadata, history) + Redis (streaming real-time logs)
   - PostgreSQL Setup:
     - https://docs.google.com/document/d/15iOqlgZsiwzGAgmnN_sBQOZPpmCjgrxgbKVoj-op9rM/edit?usp=sharing
+
+## Week3
+
+- Team 3 CI/CD Backend System Design
+- Summaries:
+  - We used a client-driven approach when designing APIs. Each CLI subcommand will have its own API and unique URI. In this way there's a one-to-one relationship between APIs and CLI subcommands, which reduces the logic on the CLI and keeps it lightweight.
+  - We designed our backend services in a way such that the same business logic can be called by different APIs. For example, ConfigService provides logic to validate a Config File, which can be used in both the API for pipeline run subcommand and the API for validate subcommand. The purpose is to create a loosely-coupled backend, and increase modularity and encapsulation. In this way, business logic is decoupled from the API layer, and the API doesn't need to worry about the implementation of the logic as long as it knows what service to call. This will help reducing repetitive logic in the backend, as the same logic can be invoked at different places. It also makes the backend easier to maintain and easier to extend.
+  - The details in this design, e.g. the exact URI path/ request entity/ response entity/ scope and methods of each service are hand-wavy and will be subjected to change/ update as we haven't come up with the DB schema and don't have enough experience working with some of the dependencies e.g. Docker/ Redis. However, we believe it's more important to start implementing now and pick up on these things along the way than waiting for a confirmed 100% preparation to start. Upon implementation, we will take a deeper look at these details and make the judgement call.
+  - This week we implemented the ConfigService, and the actual implementation is off from what was planned in the design document. For more details and the reasoning, please refer to the PR link:Implement ConfigService and ConfigValidationControlle.
