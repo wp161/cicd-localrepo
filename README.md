@@ -4,22 +4,22 @@ A Python CLI for executing and orchestrating CI/CD pipelines. This CLI is built 
 
 ## Table of Contents
 
-- [Features](#features)
+- [Features (WIP)](#features-wip)
 - [Development Setup](#development-setup)
   - [Prerequisites](#prerequisites)
   - [Build Instructions](#build-instructions)
-  - [Running Tests](#running-tests)
-  - [Other Useful Commands](#other-useful-commands)
+- [User Manual](#user-manual)
+  - [CLI Configuration](#cli-configuration)
 - [Pull Request Process](#pull-request-process)
   - [Creating a PR](#creating-a-pr)
   - [Rules for PRs](#rules-for-prs)
-- [CI/CD Workflows](#ci-cd-workflows)
+- [CI/CD Workflows](#cicd-workflows)
 - [License](#license)
 
 ## Features (WIP)
 
 - **Command-Line Interface (CLI)**: Allows users to trigger and manage CI/CD pipeline execution.
-- **YAML Configuration Support**: Define pipeline stages, jobs, and dependencies using YAML.
+- **Pipeline Configuration Support**: Define pipeline stages, jobs, and dependencies using GitLab CI/CD YAML syntax.
 - **Git Integration**: Handles fetching repositories and metadata via GitPython.
 - **Real-Time Log Streaming** (optional): Stream execution logs via Redis.
 - **Extensible and Easy to Use**: Python's simplicity for fast prototyping and development.
@@ -69,17 +69,7 @@ Run CLI command with Poetry:
 
 ```bash
 poetry run <command>
-# e.g. 
-# $ poetry run cicd config show
-
-# Displaying current configuration
-# is-repo-remote: False
-# is-config-remote: False
-# is-run-remote: False
-# repo: None
-# config: None
-# server: None
-# format: plain
+# e.g. poetry run cicd config show
 ```
 
 Running Tests
@@ -111,41 +101,72 @@ Lint Code (Flake8): Check code style against PEP8 guidelines:
 poetry run flake8 src/ tests/
 ```
 
+## User Manual
+
+### CLI Configuration
+
+#### `cicd_config.json`
+
+To simplify CLI commands and reduce the need of manually typing parameters when using
+the CLI, some of the key configurations are stored in user's local file system (default
+path is `~/.cicd_config.json`) as a JSON file:
+
+```bash
+{
+    "is_repo_remote": false,     # If the repo is a remote repo - default is false
+    "is_config_remote": false,   # If the config is from a remote repo - default is false
+    "is_run_remote": false,      # If the pipeline should run remotely - default is false
+    "repo": null,                # URL to remote repo/ path to local repo - default is null
+    "branch": "main",            # Branch of the repo - default is main
+    "config": null,              # URL/ path to config file - default is .cicd-pipelines/pipelines.yml
+    "server": null,              # Endpoint for the remote CI/CD server - default is null
+    "format": "plain"            # Output format: plain/ json/ yaml - default is plain
+}
+```
+
+#### CLI configuration commands
+
+To update configurations, reset all configurations, or show current configurations, use below command:
+
+```bash
+cicd config -help
+```
+
 ## Pull Request Process
 
 ### Creating a PR
 
-#### **Always use feature branch to make change**:
+#### Always use feature branch to make change:
 
 ```bash
 git checkout -b <branch_name> # create a new branch with <branch_name>
 ```
 
-> Direct push to the main branch is strictly forbidden as this is the Production branch. All change
-> should be merged with approved PR.
+> Direct push to the `main` branch is strictly forbidden as this is the Production branch. All change
+> should be merged with an approved PR.
 
-#### **Ensure your code is up-to-date with the `main` branch**:
+#### Ensure your code is up-to-date with the `main` branch:
 
 ```bash
 git config pull.rebase true # always use rebase to reconcile divergent branches
 git pull
 ```
 
-> Regularly pull from the main branch avoids conflicts pilling up.
+> Regularly pull from the `main` branch avoids conflicts pilling up.
 > Please make sure you pull again before creating a PR.
 
-#### **Follow the PR Template**:
+#### Follow the PR Template:
 
 - Your PR description should address any relevant context to help the reviewer to understand the
   PR. If this is related to an issue, reference the issue in the description.
 - Make sure to use the checklist, and give explanations to any unchecked ones.
 
-#### **Check PR details**:
+#### Check PR details:
 
 - Make sure the origin and destination of the PR is correct, as well as everything in the Commits
   and Files changed tabs before clicking "Create Pull Request".
 
-#### **Submit your PR**:
+#### Submit your PR:
 
 - No need to manually select reviewers. Once the PR is created, 2 reviewers will be automatically
   assigned based on the [Reviewer Lottery](https://github.com/marketplace/actions/reviewer-lottery)
@@ -153,9 +174,10 @@ git pull
 
 ### Rules for PRs
 
-#### **PR Size Limit**:
+#### PR Size Limit:
 
 - PRs should not exceed 150 lines unless absolutely necessary.
+
   > To override this, add an `override-size-limit` label in the PR, and provide explanation in the
   > PR description.
 
@@ -188,12 +210,12 @@ This project uses **GitHub Actions** for CI/CD automation. The configured CI/CD 
 
 - **Assign Reviewers**:
 
-  - This workflow is triggered when a new PR is created, and PR Size Check completes successfully.
-  - It assigns 2 random reviewers to the PR.
+  - This workflow is triggered when a new PR is created.
+  - It assigns 2 random reviewers to the PR. Subsequent updates to the PR won't add more reviewers.
 
 - **Pipeline Run**:
   - This workflow is triggered when:
-    - "PR Size Check" workflow completes successfully.
+    - A PR is created/ updated.
     - A PR is merged.
   - This workflow will execute:
     - Build: Ensures the code builds successfully.

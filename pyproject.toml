@@ -52,6 +52,3 @@ testpaths = [
 ]
 pythonpath = ["src"]
 
-[tool.flake8]
-config = "config/checkstyle/.flake8"
-

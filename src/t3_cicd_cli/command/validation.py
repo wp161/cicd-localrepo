@@ -20,12 +20,12 @@ from t3_cicd_cli.constant.default import DEFAULT_CONFIG_PATH
 def validate(config: str):
     # Use default config path if none is provided
     config_path = config if config else DEFAULT_CONFIG_PATH
-    validate_url = f"{LOCAL_ENDPOINT}{VALIDATE_URI}"
+    endpoint = f"{LOCAL_ENDPOINT}{VALIDATE_URI}"
 
     try:
         with open(config_path, "rb") as file:
             files = {"file": (config_path, file)}
-            response = requests.post(validate_url, files=files)
+            response = requests.post(endpoint, files=files)
 
         if response.status_code == 200:
             click.echo("The Config File is successfully validated.")

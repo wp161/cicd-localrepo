@@ -1,4 +1,9 @@
+DEFAULT_CLI_CONFIG_PATH = "~/.cicd_config.json"
 DEFAULT_CONFIG_PATH = ".cicd-pipelines/pipelines.yml"
 DEFAULT_BRANCH_NAME = "main"
 DEFAULT_GITHUB_URL = "https://github.com/wp161/cicd-localrepo.git"
 DEFAULT_GITHUB_REMOTE_NAME = "cicd"
+DEFAULT_OVERRIDE_OPTION = "override"
+DEFAULT_NULL_INPUTS = {"null", "Null", "None", "none"}
+DEFAULT_FORMAT = "plain"
+DEFAULT_FORMATS = {"plain", "json", "yaml"}
