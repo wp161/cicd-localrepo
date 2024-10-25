@@ -108,16 +108,16 @@ poetry run flake8 src/ tests/
 #### `cicd_config.json`
 
 To simplify CLI commands and reduce the need of manually typing parameters when using
-the CLI, some of the key configurations are stored in user's local file system (default
+the CLI, some of the key configurations are stored in the user's local file system (default
 path is `~/.cicd_config.json`) as a JSON file:
 
 ```bash
 {
-    "is_repo_remote": false,     # If the repo is a remote repo - default is false
-    "is_config_remote": false,   # If the config is from a remote repo - default is false
-    "is_run_remote": false,      # If the pipeline should run remotely - default is false
+    "is-repo-remote": false,     # If the repo is a remote repo - default is false
+    "is-config-remote": false,   # If the config is from a remote repo - default is false
+    "is-run-remote": false,      # If the pipeline should run remotely - default is false
     "repo": null,                # URL to remote repo/ path to local repo - default is null
-    "branch": "main",            # Branch of the repo - default is main
+    "remote-branch": "main",     # Branch of the remote repo - default is main
     "config": null,              # URL/ path to config file - default is .cicd-pipelines/pipelines.yml
     "server": null,              # Endpoint for the remote CI/CD server - default is null
     "format": "plain"            # Output format: plain/ json/ yaml - default is plain
@@ -126,11 +126,25 @@ path is `~/.cicd_config.json`) as a JSON file:
 
 #### CLI configuration commands
 
-To update configurations, reset all configurations, or show current configurations, use below command:
+You can update, reset, or view the current configurations using the following command:
 
 ```bash
 cicd config -help
 ```
+
+This will show all available commands and options for managing your CLI configuration.
+
+### Run Pipeline
+
+#### Handling remote/ local repo
+
+To run the CI/CD pipeline, you need to specify whether to use a remote Git repository or a local repository in the [CLI Configuration](#cli-configuration).
+
+- **Remote Repository**: If you're using a remote Git repository, the CI/CD will run using the `main` branch by default. You can override this and specify a different branch in the [CLI Configuration](#cli-configuration).
+
+- **Local Repository**: If you're using a local repository that is tracked by Git, you must commit all changes before running the CI/CD. The system will not allow the pipeline to run with uncommitted changes.
+
+Ensure that your configuration is set up correctly before running the pipeline.
 
 ## Pull Request Process
 

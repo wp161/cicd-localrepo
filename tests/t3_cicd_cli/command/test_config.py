@@ -1,5 +1,6 @@
+import os
 from click.testing import CliRunner
-from t3_cicd_cli.command.configuration import config, ConfigurationCommands
+from t3_cicd_cli.command.config import config, ConfigurationCommands
 from unittest.mock import patch, mock_open
 
 mock_config_data = """

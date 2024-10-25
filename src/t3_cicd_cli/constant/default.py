@@ -7,3 +7,4 @@ DEFAULT_OVERRIDE_OPTION = "override"
 DEFAULT_NULL_INPUTS = {"null", "Null", "None", "none"}
 DEFAULT_FORMAT = "plain"
 DEFAULT_FORMATS = {"plain", "json", "yaml"}
+MAX_UNSIGNED_64_BIT_INT = 0xFFFFFFFFFFFFFFFF
