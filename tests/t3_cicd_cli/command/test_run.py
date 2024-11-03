@@ -41,6 +41,19 @@ class TestPipelineCommands:
         assert mock_post.called
         assert "The Pipeline is successfully started." in result.output
 
+    @patch("t3_cicd_cli.command.run.configuration")
+    def test_run_with_file_and_pipeline(self, mock_config):
+        """Test error when both --file and --pipeline are specified."""
+        runner = CliRunner()
+        result = runner.invoke(
+            cli, ["run", "--file", "test_file.yml", "--pipeline", "test_pipeline"]
+        )
+
+        assert result.exit_code == 0
+        assert (
+            "Error: Specify either --file or --pipeline, but not both." in result.output
+        )
+
     @patch("t3_cicd_cli.command.run.is_git_repo", return_value=True)
     @patch("t3_cicd_cli.command.run.is_repo_dirty", return_value=False)
     @patch("t3_cicd_cli.command.run.push", return_value="main")

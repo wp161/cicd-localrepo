@@ -12,11 +12,9 @@ from t3_cicd_cli.constant.default import (
 )
 from t3_cicd_cli.constant.cli_config import (
     CLI_CONFIG_KEY_IS_REPO_REMOTE,
-    CLI_CONFIG_KEY_IS_CONFIG_REMOTE,
     CLI_CONFIG_KEY_IS_RUN_REMOTE,
     CLI_CONFIG_KEY_REPO,
     CLI_CONFIG_KEY_REMOTE_BRANCH,
-    CLI_CONFIG_KEY_CONFIG,
     CLI_CONFIG_KEY_SERVER,
     CLI_CONFIG_KEY_FORMAT,
 )
@@ -35,11 +33,9 @@ class ConfigurationCommands:
     def set_default_values(self):
         """Set all configurations to default values"""
         self.is_repo_remote = False
-        self.is_config_remote = False
         self.is_run_remote = False
         self.repo = None
         self.remote_branch = DEFAULT_BRANCH_NAME
-        self.config = None
         self.server = None
         self.format = DEFAULT_FORMAT
 
@@ -55,9 +51,6 @@ class ConfigurationCommands:
                 self.is_repo_remote = config_data.get(
                     CLI_CONFIG_KEY_IS_REPO_REMOTE, False
                 )
-                self.is_config_remote = config_data.get(
-                    CLI_CONFIG_KEY_IS_CONFIG_REMOTE, False
-                )
                 self.is_run_remote = config_data.get(
                     CLI_CONFIG_KEY_IS_RUN_REMOTE, False
                 )
@@ -65,7 +58,6 @@ class ConfigurationCommands:
                 self.remote_branch = config_data.get(
                     CLI_CONFIG_KEY_REMOTE_BRANCH, DEFAULT_BRANCH_NAME
                 )
-                self.config = config_data.get(CLI_CONFIG_KEY_CONFIG, None)
                 self.server = config_data.get(CLI_CONFIG_KEY_SERVER, None)
                 self.format = config_data.get(CLI_CONFIG_KEY_FORMAT, DEFAULT_FORMAT)
         else:
@@ -75,11 +67,9 @@ class ConfigurationCommands:
         """Save configuration to a JSON file"""
         config_data = {
             CLI_CONFIG_KEY_IS_REPO_REMOTE: self.is_repo_remote,
-            CLI_CONFIG_KEY_IS_CONFIG_REMOTE: self.is_config_remote,
             CLI_CONFIG_KEY_IS_RUN_REMOTE: self.is_run_remote,
             CLI_CONFIG_KEY_REPO: self.repo,
             CLI_CONFIG_KEY_REMOTE_BRANCH: self.remote_branch,
-            CLI_CONFIG_KEY_CONFIG: self.config,
             CLI_CONFIG_KEY_SERVER: self.server,
             CLI_CONFIG_KEY_FORMAT: self.format,
         }
@@ -90,22 +80,18 @@ class ConfigurationCommands:
         """Helper method that displays the current CLI configuration"""
         click.echo("====Displaying current configuration====\n")
         click.echo(f"{CLI_CONFIG_KEY_IS_REPO_REMOTE}: {self.is_repo_remote}")
-        click.echo(f"{CLI_CONFIG_KEY_IS_CONFIG_REMOTE}: {self.is_config_remote}")
         click.echo(f"{CLI_CONFIG_KEY_IS_RUN_REMOTE}: {self.is_run_remote}")
         click.echo(f"{CLI_CONFIG_KEY_REPO}: {self.repo}")
         click.echo(f"{CLI_CONFIG_KEY_REMOTE_BRANCH}: {self.remote_branch}")
-        click.echo(f"{CLI_CONFIG_KEY_CONFIG}: {self.config}")
         click.echo(f"{CLI_CONFIG_KEY_SERVER}: {self.server}")
         click.echo(f"{CLI_CONFIG_KEY_FORMAT}: {self.format}")
 
     def update(
         self,
         is_repo_remote: bool,
-        is_config_remote: bool,
         is_run_remote: bool,
         repo: str,
         remote_branch: str,
-        config: str,
         server: str,
         format: str,
     ):
@@ -115,16 +101,12 @@ class ConfigurationCommands:
         """
         if is_repo_remote is not None:
             self.is_repo_remote = is_repo_remote
-        if is_config_remote is not None:
-            self.is_config_remote = is_config_remote
         if is_run_remote is not None:
             self.is_run_remote = is_run_remote
         if repo is not None and repo not in DEFAULT_NULL_INPUTS:
             self.repo = repo
         if remote_branch is not None and remote_branch not in DEFAULT_NULL_INPUTS:
             self.remote_branch = remote_branch
-        if config is not None and config not in DEFAULT_NULL_INPUTS:
-            self.config = config
         if server is not None and server not in DEFAULT_NULL_INPUTS:
             self.server = server
         if format is not None and format not in DEFAULT_NULL_INPUTS:
@@ -161,12 +143,6 @@ def show():
     help="If the repo is a remote repo, default is False",
 )
 @click.option(
-    configuration.get_option(CLI_CONFIG_KEY_IS_CONFIG_REMOTE),
-    type=bool,
-    default=None,
-    help="If the config is a remote config, default is False",
-)
-@click.option(
     configuration.get_option(CLI_CONFIG_KEY_IS_RUN_REMOTE),
     type=bool,
     default=None,
@@ -183,11 +159,6 @@ def show():
     help="Branch of the remote repo, default is main",
 )
 @click.option(
-    configuration.get_option(CLI_CONFIG_KEY_CONFIG),
-    default=None,
-    help="URL or path to config file, default is null",
-)
-@click.option(
     configuration.get_option(CLI_CONFIG_KEY_SERVER),
     default=None,
     help="Endpoint for the remote server, " + "default is null",
@@ -199,11 +170,9 @@ def show():
 )
 def set(
     is_repo_remote: bool,
-    is_config_remote: bool,
     is_run_remote: bool,
     repo: str,
     remote_branch: str,
-    config: str,
     server: str,
     format: str,
 ):
@@ -212,11 +181,9 @@ def set(
     """
     configuration.update(
         is_repo_remote,
-        is_config_remote,
         is_run_remote,
         repo,
         remote_branch,
-        config,
         server,
         format,
     )

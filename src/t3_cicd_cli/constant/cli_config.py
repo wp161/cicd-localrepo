@@ -1,8 +1,6 @@
 CLI_CONFIG_KEY_IS_REPO_REMOTE = "is-repo-remote"
-CLI_CONFIG_KEY_IS_CONFIG_REMOTE = "is-config-remote"
 CLI_CONFIG_KEY_IS_RUN_REMOTE = "is-run-remote"
 CLI_CONFIG_KEY_REPO = "repo"
 CLI_CONFIG_KEY_REMOTE_BRANCH = "remote-branch"
-CLI_CONFIG_KEY_CONFIG = "config"
 CLI_CONFIG_KEY_SERVER = "server"
 CLI_CONFIG_KEY_FORMAT = "format"

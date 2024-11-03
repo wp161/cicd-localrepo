@@ -29,11 +29,24 @@ from t3_cicd_cli.constant.api import LOCAL_ENDPOINT, RUN_URI
     type=str,
     help="Override configuration values. Format: key=value.",
 )
-def run(commit, dry_run, override):
+@click.option(
+    "--file",
+    type=str,
+    help="Path to the configuration file for this pipeline run.",
+)
+@click.option(
+    "--pipeline",
+    type=str,
+    help="Name of the pipeline to run from the configuration.",
+)
+def run(commit, dry_run, override, file, pipeline):
     """
     Run the pipeline. Optionally perform a dry run or override
-    configuration values.
+    configuration values, and specify a config file or pipeline name.
     """
+    if file and pipeline:
+        click.echo("Error: Specify either --file or --pipeline, but not both.")
+        return
     if not dry_run:
         click.echo("Executing the pipeline...")
         if not configuration.repo:
@@ -44,11 +57,16 @@ def run(commit, dry_run, override):
 
         if configuration.is_repo_remote:  # use user's Git repo
             repo_url = configuration.repo
-            branch = configuration.branch
+            branch = configuration.remote_branch
         else:  # upload to our Git cicd-localrepo, user needs to commit any change first
             if not os.path.exists(configuration.repo):
                 click.echo(
                     "Error: The path of the repo does not exist in the local file system. Please check again."
+                )
+                return
+            elif file and not os.path.exists(file):
+                click.echo(
+                    f"Error: The file '{file}' does not exist in the local file system. Please check again."
                 )
                 return
             elif is_git_repo(configuration.repo):
@@ -66,6 +84,8 @@ def run(commit, dry_run, override):
             branch=branch,
             commit=commit,
             override=overrides,
+            config_path=file,
+            pipeline_name=pipeline,
         )
 
         try:
