@@ -7,9 +7,16 @@ import os
 import requests
 from t3_cicd_cli.command.config import configuration
 from t3_cicd_cli.utils.api import assemble_request
-from t3_cicd_cli.utils.git_operations import is_git_repo, is_repo_dirty, push
-from t3_cicd_cli.constant.default import DEFAULT_GITHUB_URL
+from t3_cicd_cli.utils.git_operations import (
+    check_file_exists,
+    is_github_repo,
+    is_git_repo,
+    is_repo_dirty,
+    push,
+)
+from t3_cicd_cli.constant.default import DEFAULT_CONFIG_PATH, DEFAULT_GITHUB_URL
 from t3_cicd_cli.constant.api import LOCAL_ENDPOINT, RUN_URI
+from t3_cicd_cli.utils.path import absolute_path_to_relative
 
 
 @click.command()
@@ -32,7 +39,8 @@ from t3_cicd_cli.constant.api import LOCAL_ENDPOINT, RUN_URI
 @click.option(
     "--file",
     type=str,
-    help="Path to the configuration file for this pipeline run.",
+    help="Absolute path to the configuration file for this pipeline run."
+    + f"if not provided, the path will be defaulted to {DEFAULT_CONFIG_PATH}",
 )
 @click.option(
     "--pipeline",
@@ -48,25 +56,44 @@ def run(commit, dry_run, override, file, pipeline):
         click.echo("Error: Specify either --file or --pipeline, but not both.")
         return
     if not dry_run:
-        click.echo("Executing the pipeline...")
+        config_path = DEFAULT_CONFIG_PATH
         if not configuration.repo:
             click.echo(
                 "Error: The path/URL of the repo cannot be null. Please configure it with cicd config --set."
             )
             return
-
         if configuration.is_repo_remote:  # use user's Git repo
             repo_url = configuration.repo
-            branch = configuration.remote_branch
-        else:  # upload to our Git cicd-localrepo, user needs to commit any change first
-            if not os.path.exists(configuration.repo):
+            if not is_github_repo(repo_url):
                 click.echo(
-                    "Error: The path of the repo does not exist in the local file system. Please check again."
+                    f"Error: Provided repo {repo_url} is not a valid public remote Git repo."
                 )
                 return
-            elif file and not os.path.exists(file):
+            branch = configuration.branch
+            if file:
+                is_file_exist = check_file_exists(repo_url, branch, file)
+                if not is_file_exist:
+                    click.echo(
+                        f"Error: Cannot verify file {file} in given repo {repo_url}."
+                    )
+                    return
+                config_path = absolute_path_to_relative(file, configuration.repo)
+        else:  # upload to our Git cicd-localrepo, user needs to commit any change first
+            if file:
+                if not os.path.exists(file):
+                    click.echo(
+                        f"Error: The file '{file}' does not exist in the local file system. Please check again."
+                    )
+                    return
+                if not file.startswith(configuration.repo):
+                    click.echo(
+                        f"Error: Project root name '{configuration.repo}' not found in the file path {file}. Please check again."
+                    )
+                    return
+                config_path = absolute_path_to_relative(file, configuration.repo)
+            if not os.path.exists(configuration.repo):
                 click.echo(
-                    f"Error: The file '{file}' does not exist in the local file system. Please check again."
+                    f"Error: The path of the repo {configuration.repo} does not exist in the local file system. Please check again."
                 )
                 return
             elif is_git_repo(configuration.repo):
@@ -74,6 +101,9 @@ def run(commit, dry_run, override, file, pipeline):
                     return
             repo_url = DEFAULT_GITHUB_URL
             branch = push(configuration.repo)
+
+        if pipeline:
+            config_path = None
         if override:
             overrides = dict(item.split("=") for item in override.split(","))
         else:
@@ -84,10 +114,11 @@ def run(commit, dry_run, override, file, pipeline):
             branch=branch,
             commit=commit,
             override=overrides,
-            config_path=file,
+            config_path=config_path,
             pipeline_name=pipeline,
         )
 
+        click.echo("Executing the pipeline...")
         try:
             response = requests.post(endpoint, json=param)
             if response.status_code == 200:

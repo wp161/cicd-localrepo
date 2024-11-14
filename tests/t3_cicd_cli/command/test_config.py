@@ -7,7 +7,7 @@ mock_config_data = """
   "is-repo-remote": false,
   "is-run-remote": false,
   "repo": null,
-  "remote-branch": "main",
+  "branch": "main",
   "server": null,
   "format": "plain"
 }
@@ -30,7 +30,7 @@ class TestConfigurationCommands:
         assert "is-repo-remote: False" in result.output
         assert "is-run-remote: False" in result.output
         assert "repo: None" in result.output
-        assert "remote-branch: main" in result.output
+        assert "branch: main" in result.output
         assert "server: None" in result.output
         assert "format: plain" in result.output
 
@@ -51,7 +51,7 @@ class TestConfigurationCommands:
                 "True",
                 "--repo",
                 "https://example.com/repo.git",
-                "--remote-branch",
+                "--branch",
                 "example-branch",
                 "--server",
                 "https://example.com/server",
@@ -64,7 +64,7 @@ class TestConfigurationCommands:
         assert "is-repo-remote: True" in result.output
         assert "is-run-remote: True" in result.output
         assert "repo: https://example.com/repo.git" in result.output
-        assert "remote-branch: example-branch" in result.output
+        assert "branch: example-branch" in result.output
         assert "server: https://example.com/server" in result.output
         assert "format: json" in result.output
 
@@ -81,7 +81,7 @@ class TestConfigurationCommands:
             config,
             [
                 "set",
-                "--remote-branch",
+                "--branch",
                 "none",
                 "--server",
                 "none",
@@ -89,7 +89,7 @@ class TestConfigurationCommands:
         )
         assert result.exit_code == 0
         assert "Settings updated." in result.output
-        assert "remote-branch: main" in result.output
+        assert "branch: main" in result.output
         assert "server: None" in result.output
 
     @patch(

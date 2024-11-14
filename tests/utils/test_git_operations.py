@@ -3,6 +3,8 @@ from unittest.mock import patch, MagicMock
 import git
 from t3_cicd_cli.constant.default import DEFAULT_GITHUB_URL, DEFAULT_GITHUB_REMOTE_NAME
 from t3_cicd_cli.utils.git_operations import (
+    check_file_exists,
+    is_github_repo,
     is_git_repo,
     is_repo_dirty,
     setup_repo,
@@ -111,8 +113,8 @@ class TestGitMethods(unittest.TestCase):
         mock_repo.return_value.remotes = []
         mock_repo.return_value.create_remote.return_value = mock_remote
         repo = mock_repo("/path/to/repo")
-        branch_name_hash = (
-            hash("/path/to/repo" + str(mock_time.return_value)) & 0xFFFFFFFFFFFFFFFF
+        branch_name_hash = str(
+            (hash("/path/to/repo" + str(mock_time.return_value)) & 0xFFFFFFFFFFFFFFFF)
         )
         branch = push("/path/to/repo")
         repo.create_head.assert_called_once_with(branch_name_hash)
@@ -124,3 +126,24 @@ class TestGitMethods(unittest.TestCase):
             refspec=f"{branch_name_hash}:{branch_name_hash}"
         )
         self.assertEqual(branch, branch_name_hash)
+
+    def test_check_file_exists(self):
+        self.assertTrue(
+            check_file_exists(
+                "https://github.com/wp161/cicd-localrepo.git", "main", "LICENSE"
+            )
+        )
+        self.assertFalse(
+            check_file_exists(
+                "https://github.com/wp161/cicd-localrepo.git", "main", "non-exist"
+            )
+        )
+
+    def test_is_github_repo(self):
+        self.assertTrue(is_github_repo("https://github.com/wp161/cicd-localrepo.git"))
+        self.assertFalse(
+            is_github_repo("https://github.com/CS6510-SEA-F24/t3-cicd-cli.git")
+        )
+        self.assertFalse(
+            is_github_repo("/Users/User/Desktop/example/project/t3-cicd-cli")
+        )
