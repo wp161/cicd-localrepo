@@ -14,7 +14,7 @@ from t3_cicd_cli.constant.cli_config import (
     CLI_CONFIG_KEY_IS_REPO_REMOTE,
     CLI_CONFIG_KEY_IS_RUN_REMOTE,
     CLI_CONFIG_KEY_REPO,
-    CLI_CONFIG_KEY_REMOTE_BRANCH,
+    CLI_CONFIG_KEY_BRANCH,
     CLI_CONFIG_KEY_SERVER,
     CLI_CONFIG_KEY_FORMAT,
 )
@@ -35,7 +35,7 @@ class ConfigurationCommands:
         self.is_repo_remote = False
         self.is_run_remote = False
         self.repo = None
-        self.remote_branch = DEFAULT_BRANCH_NAME
+        self.branch = DEFAULT_BRANCH_NAME
         self.server = None
         self.format = DEFAULT_FORMAT
 
@@ -55,8 +55,8 @@ class ConfigurationCommands:
                     CLI_CONFIG_KEY_IS_RUN_REMOTE, False
                 )
                 self.repo = config_data.get(CLI_CONFIG_KEY_REPO, None)
-                self.remote_branch = config_data.get(
-                    CLI_CONFIG_KEY_REMOTE_BRANCH, DEFAULT_BRANCH_NAME
+                self.branch = config_data.get(
+                    CLI_CONFIG_KEY_BRANCH, DEFAULT_BRANCH_NAME
                 )
                 self.server = config_data.get(CLI_CONFIG_KEY_SERVER, None)
                 self.format = config_data.get(CLI_CONFIG_KEY_FORMAT, DEFAULT_FORMAT)
@@ -69,7 +69,7 @@ class ConfigurationCommands:
             CLI_CONFIG_KEY_IS_REPO_REMOTE: self.is_repo_remote,
             CLI_CONFIG_KEY_IS_RUN_REMOTE: self.is_run_remote,
             CLI_CONFIG_KEY_REPO: self.repo,
-            CLI_CONFIG_KEY_REMOTE_BRANCH: self.remote_branch,
+            CLI_CONFIG_KEY_BRANCH: self.branch,
             CLI_CONFIG_KEY_SERVER: self.server,
             CLI_CONFIG_KEY_FORMAT: self.format,
         }
@@ -82,7 +82,7 @@ class ConfigurationCommands:
         click.echo(f"{CLI_CONFIG_KEY_IS_REPO_REMOTE}: {self.is_repo_remote}")
         click.echo(f"{CLI_CONFIG_KEY_IS_RUN_REMOTE}: {self.is_run_remote}")
         click.echo(f"{CLI_CONFIG_KEY_REPO}: {self.repo}")
-        click.echo(f"{CLI_CONFIG_KEY_REMOTE_BRANCH}: {self.remote_branch}")
+        click.echo(f"{CLI_CONFIG_KEY_BRANCH}: {self.branch}")
         click.echo(f"{CLI_CONFIG_KEY_SERVER}: {self.server}")
         click.echo(f"{CLI_CONFIG_KEY_FORMAT}: {self.format}")
 
@@ -91,7 +91,7 @@ class ConfigurationCommands:
         is_repo_remote: bool,
         is_run_remote: bool,
         repo: str,
-        remote_branch: str,
+        branch: str,
         server: str,
         format: str,
     ):
@@ -105,8 +105,8 @@ class ConfigurationCommands:
             self.is_run_remote = is_run_remote
         if repo is not None and repo not in DEFAULT_NULL_INPUTS:
             self.repo = repo
-        if remote_branch is not None and remote_branch not in DEFAULT_NULL_INPUTS:
-            self.remote_branch = remote_branch
+        if branch is not None and branch not in DEFAULT_NULL_INPUTS:
+            self.branch = branch
         if server is not None and server not in DEFAULT_NULL_INPUTS:
             self.server = server
         if format is not None and format not in DEFAULT_NULL_INPUTS:
@@ -154,7 +154,7 @@ def show():
     help="URL or path to repo, " + "default is null",
 )
 @click.option(
-    configuration.get_option(CLI_CONFIG_KEY_REMOTE_BRANCH),
+    configuration.get_option(CLI_CONFIG_KEY_BRANCH),
     default=None,
     help="Branch of the remote repo, default is main",
 )
@@ -172,7 +172,7 @@ def set(
     is_repo_remote: bool,
     is_run_remote: bool,
     repo: str,
-    remote_branch: str,
+    branch: str,
     server: str,
     format: str,
 ):
@@ -183,7 +183,7 @@ def set(
         is_repo_remote,
         is_run_remote,
         repo,
-        remote_branch,
+        branch,
         server,
         format,
     )

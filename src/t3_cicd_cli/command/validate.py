@@ -9,7 +9,8 @@ from t3_cicd_cli.constant.api import LOCAL_ENDPOINT, VALIDATE_URI
 from t3_cicd_cli.constant.default import DEFAULT_CONFIG_PATH, DEFAULT_GITHUB_URL
 from t3_cicd_cli.command.config import configuration
 from t3_cicd_cli.utils.api import assemble_request
-from t3_cicd_cli.utils.git_operations import push
+from t3_cicd_cli.utils.git_operations import check_file_exists, push
+from t3_cicd_cli.utils.path import absolute_path_to_relative
 
 
 @click.command(name="validate")
@@ -17,19 +18,37 @@ from t3_cicd_cli.utils.git_operations import push
     "--file",
     type=str,
     required=False,
-    help="The path to the configuration file you want to validate. "
-    + "if not provided, the path will be defaulted to that specified "
-    + "in the CLI config file.",
+    help="Absolute path to the configuration file you want to validate. "
+    + "if not provided, the path will be defaulted to {DEFAULT_CONFIG_PATH}",
 )
 def validate(file: str):
-    # Use default config path if none is provided
-    config_path = file if file else DEFAULT_CONFIG_PATH
+    config_path = DEFAULT_CONFIG_PATH
 
     if configuration.is_repo_remote:
         repo_url = configuration.repo
-        branch = configuration.remote_branch
-
+        branch = configuration.branch
+        if file:
+            if configuration.is_repo_remote:
+                is_file_exist = check_file_exists(repo_url, branch, file)
+                if not is_file_exist:
+                    click.echo(
+                        f"Error: Cannot verify file {file} in given repo {repo_url}."
+                    )
+                    return
+                config_path = absolute_path_to_relative(file, configuration.repo)
     else:  # upload to our Git cicd-localrepo
+        if file:
+            if not os.path.exists(file):
+                click.echo(
+                    f"Error: The file '{file}' does not exist in the local file system. Please check again."
+                )
+                return
+            if not file.startswith(configuration.repo):
+                click.echo(
+                    f"Error: Project root name '{configuration.repo}' not found in the file path {file}. Please check again."
+                )
+                return
+            config_path = absolute_path_to_relative(file, configuration.repo)
         if not os.path.exists(configuration.repo):
             click.echo(
                 "Error: The path of the repo does not exist in the local file system. Please check again."
