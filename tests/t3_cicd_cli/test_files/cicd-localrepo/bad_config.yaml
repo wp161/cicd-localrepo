@@ -3,13 +3,14 @@ stages:
   - test
   - documentation
   - deploy
+  - ab
 
 image:
   name: gradle:8.7
 
 compile:
-  needs:
-  # needs: ["validation"]
+  stage: 
+  needs: ["validation"]
   script:
     - echo "Compile application"
     # - gradle classes
@@ -20,36 +21,9 @@ compile:
     paths:
       - app/build/classes/*
 
-
+comp:
 
 validation:
-  needs: ["validation2", "validation3"]
-  stage: build
-  script:
-    - echo "Running validations"
-    - gradle checkstyleMain checkstyleTest spotbugsMain
-  artifacts:
-    when: on_success
-    access: all
-    expire_in: "30 days"
-    paths:
-      - app/build/reports/*
-
-validation2:
-  needs: []
-  stage: build
-  script:
-    - echo "Running validations"
-    - gradle checkstyleMain checkstyleTest spotbugsMain
-  artifacts:
-    when: on_success
-    access: all
-    expire_in: "30 days"
-    paths:
-      - app/build/reports/*
-
-validation3:
-  needs: ["validation2"]
   stage: build
   script:
     - echo "Running validations"
