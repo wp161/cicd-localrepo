@@ -7,8 +7,17 @@ from t3_cicd_cli.constant.default import DEFAULT_CONFIG_PATH
 class TestValidateCommand:
     @patch("t3_cicd_cli.command.validate.configuration")
     @patch("t3_cicd_cli.command.validate.check_file_exists")
+    @patch("t3_cicd_cli.command.validate.is_github_repo", return_value=True)
+    @patch("t3_cicd_cli.command.validate.os.path.exists", return_value=True)
     @patch("t3_cicd_cli.command.validate.requests.post")
-    def test_validate_good_config(self, mock_post, mock_check_file_exists, mock_config):
+    def test_validate_good_config(
+        self,
+        mock_post,
+        mock_exists,
+        mock_is_github_repo,
+        mock_check_file_exists,
+        mock_config,
+    ):
         mock_config.is_repo_remote = True
         mock_config.repo = "https://github.com/example.git"
         mock_config.branch = "main"
@@ -20,12 +29,12 @@ class TestValidateCommand:
         runner = CliRunner()
         result = runner.invoke(
             validate,
-            ["--file", "example/good_config.yaml"],
+            ["--file", "good_config.yaml"],
         )
         assert result.exit_code == 0
         assert "The Config File is successfully validated." in result.output
         mock_check_file_exists.assert_called_once_with(
-            "https://github.com/example.git", "main", "example/good_config.yaml"
+            "https://github.com/example.git", "main", "good_config.yaml"
         )
         mock_post.assert_called_once_with(
             "http://localhost:8080/validate",
@@ -53,15 +62,16 @@ class TestValidateCommand:
             ["--file", "tests/t3_cicd_cli/test_files/cicd-localrepo/bad_config.yaml"],
         )
         assert result.exit_code == 0
-        assert (
-            "Project root name 'https://github.com/example.git' not found in the file path tests/t3_cicd_cli/test_files/cicd-localrepo/bad_config.yaml"
-            in result.output
-        )
+        assert "Validation failed" in result.output
         mock_push.assert_not_called
 
     @patch("t3_cicd_cli.command.validate.configuration")
     @patch("t3_cicd_cli.command.validate.requests.post")
-    def test_validate_default_config_path(self, mock_post, mock_config):
+    @patch("t3_cicd_cli.command.validate.is_github_repo", return_value=True)
+    @patch("t3_cicd_cli.command.validate.os.path.exists", return_value=True)
+    def test_validate_default_config_path(
+        self, mock_exists, mock_is_github_repo, mock_post, mock_config
+    ):
         mock_config.is_repo_remote = True
         mock_config.repo = "https://github.com/example.git"
         mock_config.branch = "main"
@@ -84,14 +94,12 @@ class TestValidateCommand:
 
     @patch("t3_cicd_cli.command.validate.configuration")
     @patch("t3_cicd_cli.command.validate.os.path.exists")
-    @patch("t3_cicd_cli.command.validate.absolute_path_to_relative")
     @patch("t3_cicd_cli.command.validate.requests.post")
     @patch("t3_cicd_cli.command.validate.push")
     def test_validate_good_file_local_repo(
         self,
         mock_push,
         mock_post,
-        mock_absolute_path_to_relative,
         mock_exists,
         mock_config,
     ):
@@ -100,7 +108,6 @@ class TestValidateCommand:
         mock_config.repo = "/path/to/local/repo"
         mock_config.branch = "main"
         mock_exists.return_value = True
-        mock_absolute_path_to_relative.return_value = "relative/path/to/config.yaml"
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_response.text = "Success"
@@ -108,7 +115,7 @@ class TestValidateCommand:
         mock_push.return_value = "main"
 
         runner = CliRunner()
-        result = runner.invoke(validate, ["--file", "/path/to/local/repo/config.yaml"])
+        result = runner.invoke(validate, ["--file", "config.yaml"])
 
         assert result.exit_code == 0
         assert "The Config File is successfully validated." in result.output
@@ -117,7 +124,7 @@ class TestValidateCommand:
             json={
                 "repo_url": "https://github.com/wp161/cicd-localrepo.git",
                 "branch": "main",
-                "config_path": "relative/path/to/config.yaml",
+                "config_path": "config.yaml",
             },
         )
 
@@ -142,8 +149,9 @@ class TestValidateCommand:
     @patch("t3_cicd_cli.command.validate.configuration")
     @patch("t3_cicd_cli.command.validate.requests.post")
     @patch("t3_cicd_cli.command.validate.check_file_exists")
+    @patch("t3_cicd_cli.command.validate.is_github_repo", return_value=True)
     def test_validate_non_exist_file_remote_repo(
-        self, mock_check_file_exists, mock_post, mock_config
+        self, mock_is_github_repo, mock_check_file_exists, mock_post, mock_config
     ):
         """Test the 'validate' command when --file does not exist in a remote repo."""
 
@@ -155,12 +163,36 @@ class TestValidateCommand:
         runner = CliRunner()
         result = runner.invoke(validate, ["--file", "nonexistent_file.yaml"])
 
-        # assert result.exit_code == 0
+        assert result.exit_code == 0
         assert (
-            "Error: Cannot verify file nonexistent_file.yaml in given repo https://github.com/example.git."
+            "Cannot find file nonexistent_file.yaml in given repo https://github.com/example.git in main branch."
             in result.output
         )
         mock_post.assert_not_called()
         mock_check_file_exists.assert_called_once_with(
             "https://github.com/example.git", "main", "nonexistent_file.yaml"
         )
+
+    @patch("t3_cicd_cli.command.validate.configuration")
+    @patch("t3_cicd_cli.command.validate.requests.post")
+    @patch("t3_cicd_cli.command.validate.check_file_exists")
+    @patch("t3_cicd_cli.command.validate.is_github_repo", return_value=False)
+    def test_validate_non_exist_remote_repo(
+        self, mock_is_github_repo, mock_check_file_exists, mock_post, mock_config
+    ):
+        """Test the 'validate' command when --file does not exist in a remote repo."""
+
+        mock_config.is_repo_remote = True
+        mock_config.repo = "https://github.com/example.git"
+        mock_config.branch = "main"
+        mock_check_file_exists.return_value = False
+
+        runner = CliRunner()
+        result = runner.invoke(validate, ["--file", "nonexistent_file.yaml"])
+
+        assert result.exit_code == 0
+        assert (
+            "Error: Provided repo https://github.com/example.git is not a valid public remote Git repo."
+            in result.output
+        )
+        mock_post.assert_not_called()

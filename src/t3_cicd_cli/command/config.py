@@ -151,7 +151,9 @@ def show():
 @click.option(
     configuration.get_option(CLI_CONFIG_KEY_REPO),
     default=None,
-    help="URL or path to repo, " + "default is null",
+    help=f"Git URL (if {CLI_CONFIG_KEY_IS_REPO_REMOTE} is true) or absolute path \
+    (if {CLI_CONFIG_KEY_IS_REPO_REMOTE} is false) of the repo, "
+    + "default is null",
 )
 @click.option(
     configuration.get_option(CLI_CONFIG_KEY_BRANCH),

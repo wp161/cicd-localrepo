@@ -25,11 +25,13 @@ class TestPipelineCommands:
     @patch("t3_cicd_cli.command.run.is_repo_dirty", return_value=False)
     @patch("t3_cicd_cli.command.run.push", return_value="main")
     @patch("t3_cicd_cli.command.run.requests.post")
-    @patch("t3_cicd_cli.command.run.is_github_repo", return_valie=True)
+    @patch("t3_cicd_cli.command.run.is_github_repo", return_value=True)
+    @patch("t3_cicd_cli.command.run.os.path.exists", return_value=True)
     @patch("t3_cicd_cli.command.run.configuration")
     def test_run_with_override(
         self,
         mock_config,
+        mock_exists,
         mock_is_github_repo,
         mock_post,
         mock_push,
@@ -39,7 +41,10 @@ class TestPipelineCommands:
         """Test the 'run' command with override options."""
         mock_config.repo = "https://example.com/repo.git"
         mock_config.is_repo_remote = True
-        mock_post.return_value.status_code = 200
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "Success"
+        mock_post.return_value = mock_response
 
         runner = CliRunner()
         result = runner.invoke(cli, ["run", "--override", "key1=value1,key2=value2"])
@@ -64,7 +69,6 @@ class TestPipelineCommands:
 
     @patch("t3_cicd_cli.command.run.configuration")
     @patch("t3_cicd_cli.command.run.os.path.exists")
-    @patch("t3_cicd_cli.command.run.absolute_path_to_relative")
     @patch("t3_cicd_cli.command.run.requests.post")
     @patch("t3_cicd_cli.command.run.is_git_repo")
     @patch("t3_cicd_cli.command.run.is_repo_dirty")
@@ -75,7 +79,6 @@ class TestPipelineCommands:
         mock_is_repo_dirty,
         mock_is_git_repo,
         mock_post,
-        mock_absolute_path_to_relative,
         mock_exists,
         mock_config,
     ):
@@ -85,7 +88,6 @@ class TestPipelineCommands:
         mock_config.repo = "/path/to/local/repo"
         mock_config.branch = "main"
         mock_exists.return_value = True
-        mock_absolute_path_to_relative.return_value = "relative/path/to/config.yaml"
 
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -96,9 +98,7 @@ class TestPipelineCommands:
         mock_push.return_value = "main"
         runner = CliRunner()
 
-        result = runner.invoke(
-            cli, ["run", "--file", "/path/to/local/repo/config.yaml"]
-        )
+        result = runner.invoke(cli, ["run", "--file", "config.yaml"])
         assert result.exit_code == 0
         assert "Executing the pipeline..." in result.output
         assert "The Pipeline is successfully started." in result.output
@@ -108,14 +108,14 @@ class TestPipelineCommands:
             json={
                 "repo_url": "https://github.com/wp161/cicd-localrepo.git",
                 "branch": "main",
-                "config_path": "relative/path/to/config.yaml",
+                "config_path": "config.yaml",
             },
         )
 
     @patch("t3_cicd_cli.command.run.configuration")
     @patch("t3_cicd_cli.command.run.requests.post")
     @patch("t3_cicd_cli.command.run.check_file_exists")
-    @patch("t3_cicd_cli.command.run.is_github_repo", return_valie=True)
+    @patch("t3_cicd_cli.command.run.is_github_repo", return_value=True)
     def test_run_with_non_exist_file_remote_repo(
         self, mock_is_github_repo, mock_check_file_exists, mock_post, mock_config
     ):
@@ -134,7 +134,7 @@ class TestPipelineCommands:
 
         result = runner.invoke(cli, ["run", "--file", "config.yaml"])
         assert (
-            "Error: Cannot verify file config.yaml in given repo https://github.com/example.git."
+            "Error: Cannot find file config.yaml in given repo https://github.com/example.git in main branch."
             in result.output
         )
         mock_post.assert_not_called()
@@ -143,10 +143,12 @@ class TestPipelineCommands:
     @patch("t3_cicd_cli.command.run.is_repo_dirty", return_value=False)
     @patch("t3_cicd_cli.command.run.push", return_value="main")
     @patch("t3_cicd_cli.command.run.requests.post")
-    @patch("t3_cicd_cli.command.run.is_github_repo", return_valie=True)
+    @patch("t3_cicd_cli.command.run.is_github_repo", return_value=True)
     @patch("t3_cicd_cli.command.run.configuration")
+    @patch("t3_cicd_cli.command.run.os.path.exists", return_value=True)
     def test_run_without_dry_run_or_override(
         self,
+        mock_exists,
         mock_config,
         mock_is_github_repo,
         mock_post,
@@ -157,7 +159,10 @@ class TestPipelineCommands:
         """Test the 'run' command without --dry-run or --override options."""
         mock_config.repo = "https://example.com/repo.git"
         mock_config.is_repo_remote = True
-        mock_post.return_value.status_code = 200
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "Success"
+        mock_post.return_value = mock_response
 
         runner = CliRunner()
         result = runner.invoke(cli, ["run"])

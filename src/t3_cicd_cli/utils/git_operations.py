@@ -142,5 +142,5 @@ def is_github_repo(url):
         response = requests.get(api_url, timeout=10)
         return response.status_code == 200
 
-    except requests.RequestException as e:
+    except requests.RequestException:
         return False

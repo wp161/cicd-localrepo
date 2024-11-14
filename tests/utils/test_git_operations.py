@@ -127,20 +127,46 @@ class TestGitMethods(unittest.TestCase):
         )
         self.assertEqual(branch, branch_name_hash)
 
-    def test_check_file_exists(self):
+    @patch("t3_cicd_cli.utils.git_operations.requests.get")
+    def test_check_file_exists_success(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "Success"
+        mock_get.return_value = mock_response
         self.assertTrue(
             check_file_exists(
                 "https://github.com/wp161/cicd-localrepo.git", "main", "LICENSE"
             )
         )
+
+    @patch("t3_cicd_cli.utils.git_operations.requests.get")
+    def test_check_file_exists_fail(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.text = "Fail"
+        mock_get.return_value = mock_response
         self.assertFalse(
             check_file_exists(
                 "https://github.com/wp161/cicd-localrepo.git", "main", "non-exist"
             )
         )
 
-    def test_is_github_repo(self):
+    @patch("t3_cicd_cli.utils.git_operations.requests.get")
+    def test_is_github_repo_success(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "Success"
+        mock_get.return_value = mock_response
+
         self.assertTrue(is_github_repo("https://github.com/wp161/cicd-localrepo.git"))
+
+    @patch("t3_cicd_cli.utils.git_operations.requests.get")
+    def test_is_github_repo_fail(self, mock_get):
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_response.text = "Fail"
+        mock_get.return_value = mock_response
+
         self.assertFalse(
             is_github_repo("https://github.com/CS6510-SEA-F24/t3-cicd-cli.git")
         )
