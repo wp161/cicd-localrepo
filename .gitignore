@@ -29,3 +29,6 @@ htmlcov/
 
 # Ignore Mac OS files
 .DS_Store
+
+# Ignore test Config files
+.cicd-pipelines/
