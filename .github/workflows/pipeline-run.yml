@@ -6,11 +6,12 @@ on:
       - opened # Trigger on new pull request
       - ready_for_review
       - synchronize    # Trigger when new commits are pushed to the PR
-      - closed  # Trigger when a PR is merged (closed with merged status)
+  push:
+    branches:
+      - main
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true || github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

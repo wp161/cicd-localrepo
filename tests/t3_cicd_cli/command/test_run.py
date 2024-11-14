@@ -1,6 +1,7 @@
 from click.testing import CliRunner
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock, call
 from t3_cicd_cli.cli import cli
+from t3_cicd_cli.constant.default import DEFAULT_GITHUB_URL
 
 
 class TestPipelineCommands:
@@ -53,6 +54,85 @@ class TestPipelineCommands:
         assert (
             "Error: Specify either --file or --pipeline, but not both." in result.output
         )
+
+    @patch("t3_cicd_cli.command.run.configuration")
+    @patch("t3_cicd_cli.command.run.os.path.exists")
+    @patch("t3_cicd_cli.command.run.get_project_root")
+    @patch("t3_cicd_cli.command.run.absolute_to_relative")
+    @patch("t3_cicd_cli.command.run.requests.post")
+    @patch("t3_cicd_cli.command.run.is_git_repo")
+    @patch("t3_cicd_cli.command.run.is_repo_dirty")
+    @patch("t3_cicd_cli.command.run.push")
+    def test_run_with_file_local_repo(
+        self,
+        mock_push,
+        mock_is_repo_dirty,
+        mock_is_git_repo,
+        mock_post,
+        mock_absolute_to_relative,
+        mock_get_project_root,
+        mock_exists,
+        mock_config,
+    ):
+        """Test the 'run' command when --file is specified on a local repo."""
+
+        mock_config.is_repo_remote = False
+        mock_config.repo = "/path/to/local/repo"
+        mock_config.branch = "main"
+        mock_exists.return_value = True
+        mock_get_project_root.return_value = "repo"
+        mock_absolute_to_relative.return_value = "relative/path/to/config.yaml"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "Success"
+        mock_post.return_value = mock_response
+        mock_is_git_repo.return_value = True
+        mock_is_repo_dirty.return_value = False
+        mock_push.return_value = "main"
+        runner = CliRunner()
+
+        result = runner.invoke(
+            cli, ["run", "--file", "/path/to/local/repo/config.yaml"]
+        )
+        assert result.exit_code == 0
+        assert "Executing the pipeline..." in result.output
+        assert "The Pipeline is successfully started." in result.output
+
+        mock_post.assert_called_once_with(
+            "http://localhost:8080/pipeline/run",
+            json={
+                "repo_url": "https://github.com/wp161/cicd-localrepo.git",
+                "branch": "main",
+                "config_path": "relative/path/to/config.yaml",
+            },
+        )
+
+    @patch("t3_cicd_cli.command.run.configuration")
+    @patch("t3_cicd_cli.command.run.requests.post")
+    @patch("t3_cicd_cli.command.run.check_file_exists")
+    def test_run_with_non_exist_file_remote_repo(
+        self, mock_check_file_exists, mock_post, mock_config
+    ):
+        """Test the 'run' command when --file does not exist on a local repo."""
+
+        mock_config.is_repo_remote = True
+        mock_config.repo = "https://github.com/example.git"
+        mock_config.branch = "main"
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.text = "Success"
+        mock_post.return_value = mock_response
+        mock_check_file_exists.return_value = False
+        runner = CliRunner()
+
+        result = runner.invoke(cli, ["run", "--file", "config.yaml"])
+        assert (
+            "Error: Cannot verify file config.yaml in given repo https://github.com/example.git."
+            in result.output
+        )
+        mock_post.assert_not_called()
 
     @patch("t3_cicd_cli.command.run.is_git_repo", return_value=True)
     @patch("t3_cicd_cli.command.run.is_repo_dirty", return_value=False)

@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 import git
 from t3_cicd_cli.constant.default import DEFAULT_GITHUB_URL, DEFAULT_GITHUB_REMOTE_NAME
 from t3_cicd_cli.utils.git_operations import (
+    check_file_exists,
     is_git_repo,
     is_repo_dirty,
     setup_repo,
@@ -124,3 +125,15 @@ class TestGitMethods(unittest.TestCase):
             refspec=f"{branch_name_hash}:{branch_name_hash}"
         )
         self.assertEqual(branch, branch_name_hash)
+
+    def test_check_file_exists(self):
+        self.assertTrue(
+            check_file_exists(
+                "https://github.com/wp161/cicd-localrepo.git", "main", "LICENSE"
+            )
+        )
+        self.assertFalse(
+            check_file_exists(
+                "https://github.com/wp161/cicd-localrepo.git", "main", "non-exist"
+            )
+        )

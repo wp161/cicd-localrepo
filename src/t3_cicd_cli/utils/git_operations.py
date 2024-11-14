@@ -5,6 +5,7 @@ from t3_cicd_cli.constant.default import (
     DEFAULT_GITHUB_REMOTE_NAME,
     MAX_UNSIGNED_64_BIT_INT,
 )
+import requests
 import time
 
 
@@ -89,3 +90,30 @@ def push(path):
     repo.git.checkout(branch)
     remote.push(refspec=f"{branch_name}:{branch_name}")
     return branch_name
+
+
+def check_file_exists(git_url, branch, file_path):
+    """
+    Checks if a file exists in a GitHub repository.
+
+    Parameters:
+    - git_url (str): The Git repository URL.
+    - branch (str): The branch name (e.g., 'main', 'master').
+    - file_path (str): The relative path to the file in the repository.
+
+    Returns:
+    - bool: True if the file exists, False otherwise.
+    """
+    parts = git_url.rstrip("/").replace(".git", "").split("/")
+    owner, repo = parts[-2], parts[-1]
+
+    api_url = (
+        f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path}?ref={branch}"
+    )
+
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        return True
+    else:
+        return False
