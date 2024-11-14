@@ -116,7 +116,7 @@ path is `~/.cicd_config.json`) as a JSON file:
     "is-repo-remote": false,     # If the repo is a remote repo - default is false
     "is-run-remote": false,      # If the pipeline should run remotely - default is false
     "repo": null,                # URL to remote repo/ path to local repo - default is null
-    "remote-branch": "main",     # Branch of the remote repo - default is main
+    "branch": "main",            # Branch of the remote repo - default is main
     "server": null,              # Endpoint for the remote CI/CD server - default is null
     "format": "plain"            # Output format: plain/ json/ yaml - default is plain
 }
