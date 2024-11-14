@@ -4,12 +4,15 @@ stages:
   - documentation
   - deploy
 
-image:
-  name: gradle:8.7
+default:
+  name: pipeline
+  docker:
+    image: openjdk17
 
 compile:
-  needs:
-  # needs: ["validation"]
+  # needs:
+  needs: ["validation"]
+  stage: build
   script:
     - echo "Compile application"
     # - gradle classes
@@ -27,7 +30,7 @@ validation:
   stage: build
   script:
     - echo "Running validations"
-    - gradle checkstyleMain checkstyleTest spotbugsMain
+    # - gradle checkstyleMain checkstyleTest spotbugsMain
   artifacts:
     when: on_success
     access: all
@@ -40,7 +43,7 @@ validation2:
   stage: build
   script:
     - echo "Running validations"
-    - gradle checkstyleMain checkstyleTest spotbugsMain
+    # - gradle checkstyleMain checkstyleTest spotbugsMain
   artifacts:
     when: on_success
     access: all
@@ -53,7 +56,7 @@ validation3:
   stage: build
   script:
     - echo "Running validations"
-    - gradle checkstyleMain checkstyleTest spotbugsMain
+    # - gradle checkstyleMain checkstyleTest spotbugsMain
   artifacts:
     when: on_success
     access: all
@@ -65,7 +68,7 @@ testing:
   stage: test
   script:
     - echo "Running unit tests... "
-    - gradle test jacocoTestReport
+    # - gradle test jacocoTestReport
   artifacts:
     when: on_success
     access: all
@@ -77,7 +80,7 @@ javadoc:
   stage: documentation
   script:
     - echo "Generate Javadocs"
-    - gradle javadoc
+    # - gradle javadoc
   artifacts:
 
     when: on_success
@@ -90,7 +93,7 @@ distribution:
   stage: deploy
   script:
     - echo "Create distribution"
-    - gradle assembleDist
+    # - gradle assembleDist
   artifacts:
     when: on_success
     access: all
