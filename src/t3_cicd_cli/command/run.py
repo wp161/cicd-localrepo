@@ -15,8 +15,7 @@ from t3_cicd_cli.utils.git_operations import (
 )
 from t3_cicd_cli.constant.default import DEFAULT_CONFIG_PATH, DEFAULT_GITHUB_URL
 from t3_cicd_cli.constant.api import LOCAL_ENDPOINT, RUN_URI
-from t3_cicd_cli.utils.path import absolute_to_relative, get_project_root
-
+from t3_cicd_cli.utils.path import absolute_to_relative
 
 @click.command()
 @click.option(
@@ -38,7 +37,8 @@ from t3_cicd_cli.utils.path import absolute_to_relative, get_project_root
 @click.option(
     "--file",
     type=str,
-    help="Path to the configuration file for this pipeline run.",
+    help="Relative path from the project root to the configuration file for this pipeline run."
+    + f"if not provided, the path will be defaulted to {DEFAULT_CONFIG_PATH}"
 )
 @click.option(
     "--pipeline",
@@ -91,13 +91,12 @@ def run(commit, dry_run, override, file, pipeline):
                         f"Error: The file '{file}' does not exist in the local file system. Please check again."
                     )
                     return
-                project_dir = get_project_root(repo_url)
-                if file.find(project_dir) == -1:
+                if not file.startswith(configuration.repo):
                     click.echo(
-                        f"Error: Project root name '{project_dir}' not found in the file path {file}. Please check again."
+                        f"Error: Project root name '{configuration.repo}' not found in the file path {file}. Please check again."
                     )
                     return
-                config_path = absolute_to_relative(file, project_dir)
+                config_path = absolute_to_relative(file, configuration.repo)
 
         if override:
             overrides = dict(item.split("=") for item in override.split(","))
@@ -112,6 +111,7 @@ def run(commit, dry_run, override, file, pipeline):
             config_path=config_path,
             pipeline_name=pipeline,
         )
+        print(param)
 
         click.echo("Executing the pipeline...")
         try:

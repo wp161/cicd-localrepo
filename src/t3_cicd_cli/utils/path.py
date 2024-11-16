@@ -1,25 +1,5 @@
 import os
 
-
-def get_project_root(git_url):
-    """
-    Extracts the project directory name from a Git URL without cloning.
-
-    Parameters:
-    - git_url (str): The Git URL of the repository (e.g., "https://github.com/username/project.git").
-
-    Returns:
-    - str: The project directory name derived from the Git URL (e.g., "project").
-    """
-    project_name = git_url.rstrip("/").split("/")[-1]
-    project_dir = project_name.replace(".git", "")
-    return project_dir
-
-
-git_url = "https://github.com/wp161/t3-cicd-cli.git"
-# print(get_project_root(git_url))
-
-
 def absolute_to_relative(abs_path, project_dir):
     """
     Converts an absolute path to a relative path within the specified project directory.
@@ -36,7 +16,3 @@ def absolute_to_relative(abs_path, project_dir):
     project_root_path = abs_path[: root_index + len(project_dir)]
     relative_path = os.path.relpath(abs_path, start=project_root_path)
     return relative_path
-
-
-abs_path = "/Users/Wenbo/Desktop/CS6510/project/t3-cicd-cli/.cicd-pipelines/test.yaml"
-# print(absolute_to_relative(abs_path, get_project_root(git_url)))

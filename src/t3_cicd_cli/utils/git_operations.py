@@ -83,7 +83,7 @@ def push(path):
     """
     Push the current state of the repository to the remote on a newly created branch.
     """
-    branch_name = hash(path + str(time.time())) & MAX_UNSIGNED_64_BIT_INT
+    branch_name = str(hash(path + str(time.time())) & MAX_UNSIGNED_64_BIT_INT)
     repo = setup_repo(path)
     remote = setup_remote(repo, DEFAULT_GITHUB_REMOTE_NAME, DEFAULT_GITHUB_URL)
     branch = repo.create_head(branch_name)
