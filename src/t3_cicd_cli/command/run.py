@@ -112,6 +112,7 @@ def run(commit, dry_run, override, file, pipeline):
             config_path=config_path,
             pipeline_name=pipeline,
         )
+        print(param)
 
         click.echo("Executing the pipeline...")
         try:
