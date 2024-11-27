@@ -37,7 +37,7 @@ class TestValidateCommand:
             "https://github.com/example.git", "main", "good_config.yaml"
         )
         mock_post.assert_called_once_with(
-            "http://localhost:8080/validate",
+            "http://localhost/validate",
             json={
                 "repo_url": "https://github.com/example.git",
                 "branch": "main",
@@ -84,7 +84,7 @@ class TestValidateCommand:
         assert result.exit_code == 0
         assert "The Config File is successfully validated." in result.output
         mock_post.assert_called_once_with(
-            "http://localhost:8080/validate",
+            "http://localhost/validate",
             json={
                 "repo_url": "https://github.com/example.git",
                 "branch": "main",
@@ -120,7 +120,7 @@ class TestValidateCommand:
         assert result.exit_code == 0
         assert "The Config File is successfully validated." in result.output
         mock_post.assert_called_once_with(
-            "http://localhost:8080/validate",
+            "http://localhost/validate",
             json={
                 "repo_url": "https://github.com/wp161/cicd-localrepo.git",
                 "branch": "main",
