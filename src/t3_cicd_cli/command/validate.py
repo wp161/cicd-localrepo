@@ -72,7 +72,7 @@ def validate(file: str):
 
     endpoint = f"{LOCAL_ENDPOINT}{VALIDATE_URI}"
     param = assemble_request(repo_url=repo_url, branch=branch, config_path=config_path)
-    # print(param)
+
     try:
         response = requests.post(endpoint, json=param)
         if response.status_code == 200:

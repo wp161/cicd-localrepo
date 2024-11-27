@@ -104,7 +104,7 @@ class TestPipelineCommands:
         assert "The Pipeline is successfully started." in result.output
 
         mock_post.assert_called_once_with(
-            "http://localhost:8080/pipeline/run",
+            "http://localhost/pipeline/run",
             json={
                 "repo_url": "https://github.com/wp161/cicd-localrepo.git",
                 "branch": "main",
