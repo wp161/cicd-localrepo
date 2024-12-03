@@ -1,0 +1,47 @@
+stages:
+  - build
+  - test
+  - documentation
+  - deploy
+
+default:
+  name: example-pipeline
+  docker:
+    image: openjdk:17-jdk-slim
+
+compile:
+  stage: build
+  script:
+    - echo "Compile application"
+
+validation:
+  needs: ["validation2", "validation3"]
+  stage: build
+  script:
+    - echo "Running validations"
+
+validation2:
+  stage: build
+  script:
+    - echo "Running validations"
+
+validation3:
+  needs: ["validation2"]
+  stage: build
+  script:
+    - echo "Running validations"
+
+testing:
+  stage: test
+  script:
+    - echo "Running unit tests... "
+
+javadoc:
+  stage: documentation
+  script:
+    - echo "Generate Javadocs"
+
+distribution: 
+  stage: deploy
+  script:
+    - echo "Create distribution"
